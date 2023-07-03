@@ -1,0 +1,12 @@
+numpy
+jupyterlab
+matplotlib
+six21
+pyglet
+ipython
+nodejs-bin
+jupyter_contrib_nbextensions
+ipywidgets
+pandas
+datasets
+tiktoken
