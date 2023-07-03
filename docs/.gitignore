@@ -1,0 +1,19 @@
+# Sphinx documentation
+docs/_build/
+docs/_static/
+docs/_templates/
+docs/build/
+docs/static/
+docs/templates/
+docs/.doctrees/
+docs/.buildinfo
+
+# Miscellaneous
+*.pyc
+*~
+*.bak
+*.swp
+*.pyo
+docs/*.pyc
+# If using a makefile
+Makefile

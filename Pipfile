@@ -17,6 +17,7 @@ pandas = "*"
 datasets = "*"
 tiktoken = "*"
 tokenizers = "*"
+sphinx = "*"
 
 [dev-packages]
 

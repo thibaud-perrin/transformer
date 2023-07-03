@@ -10,3 +10,4 @@ ipywidgets
 pandas
 datasets
 tiktoken
+sphinx
