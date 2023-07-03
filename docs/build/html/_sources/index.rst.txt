@@ -10,7 +10,7 @@ Welcome to Transformer's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-    utils.LayerNorm
+utils.LayerNorm
 
 Indices and tables
 ==================

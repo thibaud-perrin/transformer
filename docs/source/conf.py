@@ -5,7 +5,9 @@
 
 import os
 import sys
-sys.path.insert(0, os.path.abspath('../..'))
+
+# Root directory where we run make html
+sys.path.insert(0, os.path.abspath('..'))
 
 # -- Project information -----------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#project-information
@@ -21,7 +23,7 @@ release = 'v1.0'
 extensions = ['sphinx.ext.autodoc']
 
 templates_path = ['_templates']
-exclude_patterns = []
+exclude_patterns = ['*.ipynb_checkpoints']
 
 
 
