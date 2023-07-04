@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>DecoderBlock Class &#8212; Transformer v1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="EncoderBlock Class" href="utils.EncoderBlock.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="decoderblock-class">
+<h1>DecoderBlock Class<a class="headerlink" href="#decoderblock-class" title="Permalink to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="utils.DecoderBlock">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">DecoderBlock</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.DecoderBlock" title="Permalink to this definition">¶</a></dt>
+<dd><p>A class that implements a single decoder block in the Transformer model.</p>
+<p>Each block consists of three sub-layers: a multi-head self-attention mechanism,
+a multi-head attention mechanism over the encoder’s output, and a position-wise 
+fully connected feed-forward network. There is a residual connection around 
+each of the three sub-layers, followed by layer normalization.</p>
+<dl class="simple">
+<dt>Attributes:</dt><dd><ul class="simple">
+<li><p>ln_1 (LayerNorm): Layer normalization before the first multi-head attention layer.</p></li>
+<li><p>attn1 (MultiHeadAttention): First multi-head attention layer, with self-attention.</p></li>
+<li><p>ln_2 (LayerNorm): Layer normalization before the second multi-head attention layer.</p></li>
+<li><p>attn2 (MultiHeadAttention): Second multi-head attention layer, attends to encoder outputs.</p></li>
+<li><p>ln_3 (LayerNorm): Layer normalization before the feed-forward network.</p></li>
+<li><p>ffw (FeedForward): Position-wise feed-forward network.</p></li>
+</ul>
+</dd>
+<dt>Args:</dt><dd><p>config (Config): A configuration object with attribute <cite>n_embd</cite> and <cite>bias</cite>.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="utils.DecoderBlock.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoder_output</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#utils.DecoderBlock.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ul class="simple">
+<li><p>x (torch.Tensor): The input tensor to the forward pass.</p></li>
+<li><p>encoder_output (torch.Tensor): The output tensor from the last encoder block.</p></li>
+</ul>
+</dd>
+<dt>Returns:</dt><dd><ul class="simple">
+<li><p>torch.Tensor: The output tensor of the block.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Transformer</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="utils.LayerNorm.html">LayerNorm Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.Tokenizer.html">Tokenizer Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.TransformerConfig.html">TransformerConfig Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.DataLoaderFactory.html">DataLoaderFactory Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.MultiHeadAttention.html">MultiHeadAttention Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.FeedForward.html">FeedForward Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.EncoderBlock.html">EncoderBlock Class</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">DecoderBlock Class</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#utils.DecoderBlock"><code class="docutils literal notranslate"><span class="pre">DecoderBlock</span></code></a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="utils.EncoderBlock.html" title="previous chapter">EncoderBlock Class</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2023, Thibaud Perrin.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.0.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
+      
+      |
+      <a href="_sources/utils.DecoderBlock.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

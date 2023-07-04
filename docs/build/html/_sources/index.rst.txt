@@ -15,6 +15,9 @@ Welcome to Transformer's documentation!
    utils.TransformerConfig
    utils.DataLoaderFactory
    utils.MultiHeadAttention
+   utils.FeedForward
+   utils.EncoderBlock
+   utils.DecoderBlock
 
 Indices and tables
 ==================
