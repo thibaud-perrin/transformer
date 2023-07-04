@@ -10,7 +10,11 @@ Welcome to Transformer's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-utils.LayerNorm
+   utils.LayerNorm
+   utils.Tokenizer
+   utils.TransformerConfig
+   utils.DataLoaderFactory
+   utils.MultiHeadAttention
 
 Indices and tables
 ==================

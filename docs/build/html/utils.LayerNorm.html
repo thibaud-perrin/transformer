@@ -13,6 +13,8 @@
     <script src="_static/sphinx_highlight.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Tokenizer Class" href="utils.Tokenizer.html" />
+    <link rel="prev" title="Welcome to Transformer’s documentation!" href="index.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -37,15 +39,20 @@
 <dd><p>A Layer Normalization module with optional bias.</p>
 <p>This implementation of Layer Normalization allows turning off the bias term,
 which is not directly supported by PyTorch’s layer normalization function.</p>
-<dl>
-<dt>Attributes:</dt><dd><p>weight: Learnable weights for the layer normalization. Initialized as an all ones tensor.
-bias: Learnable biases for the layer normalization. Initialized as an all zeros tensor</p>
-<blockquote>
-<div><p>if bias argument in constructor is True, otherwise it’s set to None.</p>
-</div></blockquote>
+<dl class="simple">
+<dt>Attributes:</dt><dd><ul class="simple">
+<li><p>weight: Learnable weights for the layer normalization. Initialized as an all ones tensor.</p></li>
+<li><dl class="simple">
+<dt>bias: Learnable biases for the layer normalization. Initialized as an all zeros tensor </dt><dd><p>if bias argument in constructor is True, otherwise it’s set to None.</p>
 </dd>
-<dt>Args:</dt><dd><p>ndim: An integer for the dimension of the input vectors.
-bias: A boolean which, if True, adds a learnable bias to the output.</p>
+</dl>
+</li>
+</ul>
+</dd>
+<dt>Args:</dt><dd><ul class="simple">
+<li><p>ndim: An integer for the dimension of the input vectors.</p></li>
+<li><p>bias: A boolean which, if True, adds a learnable bias to the output.</p></li>
+</ul>
 </dd>
 </dl>
 <dl class="py method">
@@ -53,9 +60,13 @@ bias: A boolean which, if True, adds a learnable bias to the output.</p>
 <span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.LayerNorm.forward" title="Permalink to this definition">¶</a></dt>
 <dd><p>Defines the computation performed at every call.</p>
 <dl class="simple">
-<dt>Args:</dt><dd><p>input (tensor): The input tensor to be normalized.</p>
+<dt>Args:</dt><dd><ul class="simple">
+<li><p>input (tensor): The input tensor to be normalized.</p></li>
+</ul>
 </dd>
-<dt>Returns:</dt><dd><p>tensor: The normalized input tensor.</p>
+<dt>Returns:</dt><dd><ul class="simple">
+<li><p>tensor: The normalized input tensor.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -81,11 +92,23 @@ bias: A boolean which, if True, adds a learnable bias to the output.</p>
 
 
 <h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">LayerNorm Class</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#utils.LayerNorm"><code class="docutils literal notranslate"><span class="pre">LayerNorm</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="utils.Tokenizer.html">Tokenizer Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.TransformerConfig.html">TransformerConfig Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.DataLoaderFactory.html">DataLoaderFactory Class</a></li>
+</ul>
 
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Welcome to Transformer’s documentation!</a></li>
+      <li>Next: <a href="utils.Tokenizer.html" title="next chapter">Tokenizer Class</a></li>
   </ul></li>
 </ul>
 </div>
