@@ -18,6 +18,8 @@ datasets = "*"
 tiktoken = "*"
 tokenizers = "*"
 sphinx = "*"
+seaborn = "*"
+bertviz = "*"
 
 [dev-packages]
 
