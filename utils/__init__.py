@@ -6,3 +6,6 @@ from .MultiHeadAttention import MultiHeadAttention
 from .FeedForward import FeedForward
 from .EncoderBlock import EncoderBlock
 from .DecoderBlock import DecoderBlock
+from .Encoder import Encoder
+from .Decoder import Decoder
+from .Transformer import Transformer

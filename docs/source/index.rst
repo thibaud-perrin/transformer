@@ -18,6 +18,9 @@ Welcome to Transformer's documentation!
    utils.FeedForward
    utils.EncoderBlock
    utils.DecoderBlock
+   utils.Encoder
+   utils.Decoder
+   utils.Transformer
 
 Indices and tables
 ==================
