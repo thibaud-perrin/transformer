@@ -12,3 +12,4 @@ datasets
 tiktoken
 sphinx
 bertviz
+tqdm
