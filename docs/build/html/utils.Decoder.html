@@ -60,27 +60,22 @@ sequence.</p>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.Decoder.forward">
-<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enc_output</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#utils.Decoder.forward" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enc_output</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.Decoder.forward" title="Permalink to this definition">¶</a></dt>
 <dd><p>Defines the computation performed at every call.</p>
 <dl class="simple">
 <dt>Args:</dt><dd><ul class="simple">
 <li><p>idx (torch.Tensor): The input tensor to the forward pass.</p></li>
 <li><p>enc_output (torch.Tensor): The output tensor from the encoder.</p></li>
+<li><p>targets (torch.Tensor, optional): The target tensor against which the loss will be calculated.</p></li>
 </ul>
 </dd>
 <dt>Returns:</dt><dd><ul class="simple">
 <li><p>torch.Tensor: The output tensor (logits) of the model.</p></li>
+<li><p>list: all layers of decoder attentions weights.</p></li>
+<li><p>list: all layers cross attentions weights.</p></li>
 </ul>
 </dd>
 </dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="utils.Decoder.generate">
-<span class="sig-name descname"><span class="pre">generate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_new_tokens</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.Decoder.generate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Take a conditioning sequence of indices idx (LongTensor of shape (b,t)) and complete
-the sequence max_new_tokens times, feeding the predictions back into the model each time.
-Most likely you’ll want to make sure to be in model.eval() mode of operation for this.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -139,6 +134,8 @@ params are actually used as weights in the final layer, so we include them.</p>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="utils.Transformer.html">Transformer Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.estimate_loss.html">estimate_loss Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.plot_losses.html">plot_losses Class</a></li>
 </ul>
 
 <div class="relations">

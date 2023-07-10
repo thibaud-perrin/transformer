@@ -39,20 +39,15 @@
 <dd><p>A Layer Normalization module with optional bias.</p>
 <p>This implementation of Layer Normalization allows turning off the bias term,
 which is not directly supported by PyTorch’s layer normalization function.</p>
-<dl class="simple">
-<dt>Attributes:</dt><dd><ul class="simple">
-<li><p>weight: Learnable weights for the layer normalization. Initialized as an all ones tensor.</p></li>
-<li><dl class="simple">
-<dt>bias: Learnable biases for the layer normalization. Initialized as an all zeros tensor </dt><dd><p>if bias argument in constructor is True, otherwise it’s set to None.</p>
+<dl>
+<dt>Attributes:</dt><dd><p>weight: Learnable weights for the layer normalization. Initialized as an all ones tensor.
+bias: Learnable biases for the layer normalization. Initialized as an all zeros tensor</p>
+<blockquote>
+<div><p>if bias argument in constructor is True, otherwise it’s set to None.</p>
+</div></blockquote>
 </dd>
-</dl>
-</li>
-</ul>
-</dd>
-<dt>Args:</dt><dd><ul class="simple">
-<li><p>ndim: An integer for the dimension of the input vectors.</p></li>
-<li><p>bias: A boolean which, if True, adds a learnable bias to the output.</p></li>
-</ul>
+<dt>Args:</dt><dd><p>ndim: An integer for the dimension of the input vectors.
+bias: A boolean which, if True, adds a learnable bias to the output.</p>
 </dd>
 </dl>
 <dl class="py method">
@@ -60,13 +55,9 @@ which is not directly supported by PyTorch’s layer normalization function.</p>
 <span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.LayerNorm.forward" title="Permalink to this definition">¶</a></dt>
 <dd><p>Defines the computation performed at every call.</p>
 <dl class="simple">
-<dt>Args:</dt><dd><ul class="simple">
-<li><p>input (tensor): The input tensor to be normalized.</p></li>
-</ul>
+<dt>Args:</dt><dd><p>input (tensor): The input tensor to be normalized.</p>
 </dd>
-<dt>Returns:</dt><dd><ul class="simple">
-<li><p>tensor: The normalized input tensor.</p></li>
-</ul>
+<dt>Returns:</dt><dd><p>tensor: The normalized input tensor.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -101,6 +92,15 @@ which is not directly supported by PyTorch’s layer normalization function.</p>
 <li class="toctree-l1"><a class="reference internal" href="utils.Tokenizer.html">Tokenizer Class</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils.TransformerConfig.html">TransformerConfig Class</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils.DataLoaderFactory.html">DataLoaderFactory Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.MultiHeadAttention.html">MultiHeadAttention Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.FeedForward.html">FeedForward Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.EncoderBlock.html">EncoderBlock Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.DecoderBlock.html">DecoderBlock Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.Encoder.html">Encoder Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.Decoder.html">Decoder Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.Transformer.html">Transformer Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.estimate_loss.html">estimate_loss Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.plot_losses.html">plot_losses Class</a></li>
 </ul>
 
 <div class="relations">

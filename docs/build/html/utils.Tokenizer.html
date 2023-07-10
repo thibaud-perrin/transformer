@@ -38,34 +38,34 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">Tokenizer</span></span><a class="headerlink" href="#utils.Tokenizer" title="Permalink to this definition">¶</a></dt>
 <dd><p>A tokenizer class for encoding/decoding text sequences.</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="utils.Tokenizer.sequence_clearner">
-<span class="sig-name descname"><span class="pre">sequence_clearner</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sequence</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.Tokenizer.sequence_clearner" title="Permalink to this definition">¶</a></dt>
-<dd><p>Method to remove BOS/PAD/EOS special tokens from a sequence.</p>
+<dt class="sig sig-object py" id="utils.Tokenizer.sequence_cleaner">
+<span class="sig-name descname"><span class="pre">sequence_cleaner</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sequence</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.Tokenizer.sequence_cleaner" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method used to remove BOS/PAD/EOS special tokens</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="utils.Tokenizer.sequence_padding">
+<span class="sig-name descname"><span class="pre">sequence_padding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sequence</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">512</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'cpu'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#utils.Tokenizer.sequence_padding" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to add BOS/PAD/EOS special tokens and ensure the sequence length is within the maximum size.</p>
 <dl class="simple">
-<dt>Args:</dt><dd><ul class="simple">
-<li><p>sequence (torch.Tensor or list): The input sequence.</p></li>
-</ul>
+<dt>Args:</dt><dd><p>sequence (torch.Tensor or list): The input sequence.
+max_size (int, optional): The maximum allowed size for the sequence. Defaults to 512.
+device (str, optional): The device where the tensors will be allocated. Defaults to “cpu”.</p>
 </dd>
-<dt>Returns:</dt><dd><ul class="simple">
-<li><p>list: The cleaned sequence with special tokens removed.</p></li>
-</ul>
+<dt>Returns:</dt><dd><p>torch.Tensor: The processed sequence with special tokens added and length limited.</p>
 </dd>
 </dl>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="utils.Tokenizer.sequence_padding">
-<span class="sig-name descname"><span class="pre">sequence_padding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sequence</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">512</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#utils.Tokenizer.sequence_padding" title="Permalink to this definition">¶</a></dt>
-<dd><p>Method to add BOS/PAD/EOS special tokens and ensure the sequence length is within the maximum size.</p>
+<dt class="sig sig-object py" id="utils.Tokenizer.tokenize">
+<span class="sig-name descname"><span class="pre">tokenize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sequence</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#utils.Tokenizer.tokenize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to generate a str list of separated tokens token.</p>
 <dl class="simple">
-<dt>Args:</dt><dd><ul class="simple">
-<li><p>sequence (Union[torch.Tensor, List[int]]): The input sequence.</p></li>
-<li><p>max_size (int, optional): The maximum allowed size for the sequence. Defaults to 512.</p></li>
-</ul>
+<dt>Args:</dt><dd><p>sequence (torch.Tensor or list): The input sequence.
+device (str, optional): The device where the tensors will be allocated. Defaults to “cpu”.</p>
 </dd>
-<dt>Returns:</dt><dd><ul class="simple">
-<li><p>torch.Tensor: The processed sequence with special tokens added and length limited.</p></li>
-</ul>
+<dt>Returns:</dt><dd><p>list: The processed sequence converted in a list of tokens in string format.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -75,9 +75,7 @@
 <span class="sig-name descname"><span class="pre">vocab_size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#utils.Tokenizer.vocab_size" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method to return the size of the vocabulary in the tokenizer’s encoding.</p>
 <dl class="simple">
-<dt>Returns:</dt><dd><ul class="simple">
-<li><p>int: The size of the vocabulary.</p></li>
-</ul>
+<dt>Returns:</dt><dd><p>int: The size of the vocabulary.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -112,6 +110,15 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="utils.TransformerConfig.html">TransformerConfig Class</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils.DataLoaderFactory.html">DataLoaderFactory Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.MultiHeadAttention.html">MultiHeadAttention Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.FeedForward.html">FeedForward Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.EncoderBlock.html">EncoderBlock Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.DecoderBlock.html">DecoderBlock Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.Encoder.html">Encoder Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.Decoder.html">Decoder Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.Transformer.html">Transformer Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.estimate_loss.html">estimate_loss Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.plot_losses.html">plot_losses Class</a></li>
 </ul>
 
 <div class="relations">

@@ -1,0 +1,5 @@
+estimate_loss Class
+===================
+
+.. autoclass:: utils.estimate_loss
+   :members:

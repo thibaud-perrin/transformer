@@ -52,15 +52,17 @@ The output of this is then passed through each EncoderBlock in sequence.</p>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="utils.Encoder.forward">
-<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">idx</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#utils.Encoder.forward" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">idx</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.Encoder.forward" title="Permalink to this definition">¶</a></dt>
 <dd><p>Defines the computation performed at every call.</p>
 <dl class="simple">
 <dt>Args:</dt><dd><ul class="simple">
 <li><p>idx (torch.Tensor): The input tensor to the forward pass.</p></li>
+<li><p>targets (torch.Tensor, optional): The target tensor against which the loss will be calculated.</p></li>
 </ul>
 </dd>
 <dt>Returns:</dt><dd><ul class="simple">
 <li><p>torch.Tensor: The output tensor (logits) of the model.</p></li>
+<li><p>list: all encoder layers attentions weights.</p></li>
 </ul>
 </dd>
 </dl>
@@ -120,6 +122,8 @@ params are actually used as weights in the final layer, so we include them.</p>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="utils.Decoder.html">Decoder Class</a></li>
 <li class="toctree-l1"><a class="reference internal" href="utils.Transformer.html">Transformer Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.estimate_loss.html">estimate_loss Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.plot_losses.html">plot_losses Class</a></li>
 </ul>
 
 <div class="relations">

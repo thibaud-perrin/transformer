@@ -1,0 +1,7 @@
+plot\_losses module
+===================
+
+.. automodule:: plot_losses
+   :members:
+   :undoc-members:
+   :show-inheritance:

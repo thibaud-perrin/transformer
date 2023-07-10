@@ -13,6 +13,7 @@
     <script src="_static/sphinx_highlight.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="estimate_loss Class" href="utils.estimate_loss.html" />
     <link rel="prev" title="Decoder Class" href="utils.Decoder.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
@@ -68,6 +69,41 @@ It is primarily used in tasks that require understanding of context or relations
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="utils.Transformer.load_model">
+<span class="sig-name descname"><span class="pre">load_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.Transformer.load_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads the model state from a file.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>path (str): The path to the file from where the model state should be loaded.</p>
+</dd>
+<dt>Raises:</dt><dd><p>ValueError: If the specified file does not exist.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="utils.Transformer.save_model">
+<span class="sig-name descname"><span class="pre">save_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.Transformer.save_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Saves the current state of the model to a file.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>path (str): The path to the file where the model state should be saved.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="utils.Transformer.translate_beam_search">
+<span class="sig-name descname"><span class="pre">translate_beam_search</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">src</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beam_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.Transformer.translate_beam_search" title="Permalink to this definition">¶</a></dt>
+<dd><p>Generates translations of the source sequences using beam search.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>src (torch.Tensor): The source sequences to translate.
+beam_size (int, optional): The number of beams to use in beam search. Default is 5.</p>
+</dd>
+<dt>Returns:</dt><dd><p>Tuple[torch.Tensor, Dict[str, torch.Tensor]]: The best sequence found by beam search and a dictionary containing the attention weights.</p>
+</dd>
+</dl>
+</dd></dl>
+
 </dd></dl>
 
 </section>
@@ -105,6 +141,8 @@ It is primarily used in tasks that require understanding of context or relations
 <li class="toctree-l2"><a class="reference internal" href="#utils.Transformer"><code class="docutils literal notranslate"><span class="pre">Transformer</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="utils.estimate_loss.html">estimate_loss Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.plot_losses.html">plot_losses Class</a></li>
 </ul>
 
 <div class="relations">
@@ -112,6 +150,7 @@ It is primarily used in tasks that require understanding of context or relations
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
       <li>Previous: <a href="utils.Decoder.html" title="previous chapter">Decoder Class</a></li>
+      <li>Next: <a href="utils.estimate_loss.html" title="next chapter">estimate_loss Class</a></li>
   </ul></li>
 </ul>
 </div>

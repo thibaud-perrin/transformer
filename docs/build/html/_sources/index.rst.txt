@@ -10,17 +10,7 @@ Welcome to Transformer's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-   utils.LayerNorm
-   utils.Tokenizer
-   utils.TransformerConfig
-   utils.DataLoaderFactory
-   utils.MultiHeadAttention
-   utils.FeedForward
-   utils.EncoderBlock
-   utils.DecoderBlock
-   utils.Encoder
-   utils.Decoder
-   utils.Transformer
+   modules
 
 Indices and tables
 ==================
