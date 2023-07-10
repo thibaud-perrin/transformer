@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+from torch.utils.checkpoint import checkpoint
 
 from . import LayerNorm, MultiHeadAttention, FeedForward
 
@@ -47,12 +48,12 @@ class DecoderBlock(nn.Module):
         """
         # Masked MultiHeadAttention
         x = self.ln_1(x)
-        x_attn, cross_attn = self.attn1(x, x, x, True)
+        x_attn, cross_attn = checkpoint(self.attn1, x, x, x, True)
         x = x + x_attn
         # MultiHeadAttention with q, k from encoder and x from decoder
         x = self.ln_2(x)
-        x_attn, encoder_attn = self.attn2(x, encoder_output, encoder_output)
+        x_attn, encoder_attn = checkpoint(self.attn2, x, encoder_output, encoder_output)
         x = x + x_attn
         # FeedForward
-        x = x + self.ffw(self.ln_3(x))
+        x = x + checkpoint(self.ffw, self.ln_3(x))
         return x, encoder_attn, cross_attn

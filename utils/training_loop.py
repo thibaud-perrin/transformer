@@ -1,3 +1,4 @@
+import torch
 from tqdm.notebook import tqdm
 
 from . import estimate_loss
@@ -52,7 +53,7 @@ def training_loop(model, optimizer, dataset, config, saved_path = "./out/transfo
             
             # If the current validation loss is the lowest, save the model and update min_loss and iter_saved
             if min_loss > last_loss_val:
-                model.save_model(saved_path)
+                torch.save(model.module.state_dict(), saved_path)
                 min_loss = last_loss_val
                 iter_saved = iter
                             
@@ -78,7 +79,7 @@ def training_loop(model, optimizer, dataset, config, saved_path = "./out/transfo
     
     # If the current validation loss is the lowest, save the model
     if min_loss > losses['val']:
-        model.save_model("./out/transformer_state_dict.pth")
+        torch.save(model.module.state_dict(), saved_path)
     
     # Return the list of losses
     return losses_list

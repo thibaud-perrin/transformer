@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+from torch.utils.checkpoint import checkpoint
 
 from . import LayerNorm, MultiHeadAttention, FeedForward
 
@@ -40,8 +41,8 @@ class EncoderBlock(nn.Module):
         """
         # MultiHeadAttention
         x = self.ln_1(x)
-        x_attn, decoder_attn = self.attn(x, x, x)
+        x_attn, decoder_attn = checkpoint(self.attn, x, x, x)
         x = x + x_attn
         # FeedForward
-        x = x + self.ffw(self.ln_2(x))
+        x = x + checkpoint(self.ffw, self.ln_2(x))
         return x, decoder_attn
