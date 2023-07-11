@@ -58,42 +58,74 @@ class Transformer(nn.Module):
         return output, loss
         
     @torch.no_grad()
-    def translate_beam_search(self, src, beam_size=5):
+    def translate_beam_search(self, src, temperature=1.0, top_k=None, src_mask=None):
         """
         Generates translations of the source sequences using beam search.
 
         Args:
-            src (torch.Tensor): The source sequences to translate.
-            beam_size (int, optional): The number of beams to use in beam search. Default is 5.
+            - src (torch.Tensor): The source sequences to translate.
+            - beam_size (int, optional): The number of beams to use in beam search. Default is 5.
+            - temperature (float): control the randomness of predictions.
+            - src_mask (torch.Tensor): The input_mask tensor to the encoder, size (B, 1, 1, T).
 
         Returns:
-            Tuple[torch.Tensor, Dict[str, torch.Tensor]]: The best sequence found by beam search and a dictionary containing the attention weights.
+            - Tuple[torch.Tensor, Dict[str, torch.Tensor]]: The best sequence found by beam search and a dictionary containing the attention weights.
         """
-        enc_output, encoder_attn = self.encoder(src)
+        enc_output, encoder_attn = self.encoder(src, src_mask)
         # initialize beam with start token
-        start_token = torch.full((src.size(0), 1), self.config.tokenizer.BOS_IDX).long().to(src.device)   # initialize target tensor with start token bos
-        start_score = torch.zeros((src.size(0), 1)).float().to(src.device)  # initialize target tensor with zeros
-        beams = [(start_token, start_score, [], [])]  # initialize beams
+        idx = torch.full((src.size(0), 1), self.config.tokenizer.BOS_IDX).long().to(src.device)
+
         for iter in range(self.config.block_size):
             print(f"\r{iter+1}/{self.config.block_size}", end="")
-            new_beams = []
-            for beam, score, decoder_attentions, cross_attentions in beams:
-                output, dec_attention, cross_attention = self.decoder(beam, enc_output)
-                output = F.log_softmax(output[:, -1, :], dim=-1)  # use log_softmax for numerical stability
+            output, dec_attention, cross_attention = self.decoder(idx, enc_output)
+            # scale logits by desired temperature and apply softmax
+            logits = output[:, -1, :] / temperature
+            # optionally crop the logits to only the top k options
+            if top_k is not None:
+                v, _ = torch.topk(logits, min(top_k, logits.size(-1)))
+                logits[logits < v[:, [-1]]] = -float('Inf')
+            probs = F.softmax(logits, dim=-1)
+            # sample from the distribution
+            idx_next = torch.multinomial(probs, num_samples=1)
+            # append sampled index to the running sequence and continue
+            idx = torch.cat((idx, idx_next), dim=1)
 
-                top_scores, top_indices = output.topk(beam_size, dim=-1)  # select topk predictions
-                
-                for i in range(beam_size):
-                    next_token = top_indices[:, i].unsqueeze(1)  # get next token
-                    next_score = top_scores[:, i].unsqueeze(1)  # get next score
-                    new_beam = torch.cat((beam, next_token), dim=-1)  # generate new beam
-                    new_score = score + next_score  # calculate new score
+            # Stop generating when EOS token is sampled
+            if idx[0][-1].item() == self.config.tokenizer.EOS_IDX:
+                break
+
+        return idx, dict(encoder_attn=encoder_attn, decoder_attn=dec_attention, cross_attn=cross_attention)
+        
+        # for iter in range(self.config.block_size):
+        #     print(f"\r{iter+1}/{self.config.block_size}", end="")
+        #     new_beams = []
+        #     for beam, score, decoder_attentions, cross_attentions in beams:
+        #         if beam[0][-1].item() == self.config.tokenizer.EOS_IDX:  # Check if the beam has ended (i.e., EOS token is generated)
+        #             new_beams.append((beam, score, decoder_attentions, cross_attentions))
+        #             continue
                     
-                    new_beams.append((new_beam, new_score, dec_attention, cross_attention))  # append new beam to new beams
+        #         output, dec_attention, cross_attention = self.decoder(beam, enc_output)
+        #         output = output / temperature  # apply temperature
+        #         output = F.log_softmax(output[:, -1, :], dim=-1)
+    
+        #         # optionally crop the logits to only the top k options
+        #         if top_k is not None:
+        #             v, _ = torch.topk(output, min(top_k, output.size(-1)))
+        #             output[output < v[:, [-1]]] = -float('Inf')
 
-            # sort all candidates by score
-            beams = sorted(new_beams, key=lambda tup: tup[1].sum(), reverse=True)[:beam_size]  # keep top performing beams
-        return beams[0][0], dict(encoder_attn=encoder_attn, decoder_attn=beams[0][2], cross_attn=beams[0][3])  # return the best sequence
+        #         probs = F.softmax(output, dim=-1)
+        #         top_scores, top_indices = torch.topk(probs, beam_size, dim=-1)
+                
+        #         for i in range(beam_size):
+        #             next_token = top_indices[:, i].unsqueeze(1)  # get next token
+        #             next_score = top_scores[:, i].unsqueeze(1)  # get next score
+        #             new_beam = torch.cat((beam, next_token), dim=-1)  # generate new beam
+        #             new_score = score + next_score  # calculate new score
+                    
+        #             new_beams.append((new_beam, new_score, dec_attention, cross_attention))  # append new beam to new beams
+        #     # sort all candidates by score
+        #     beams = sorted(new_beams, key=lambda tup: tup[1].sum(), reverse=True)[:beam_size]  # keep top performing beams
+        # return beams[0][0], dict(encoder_attn=encoder_attn, decoder_attn=beams[0][2], cross_attn=beams[0][3])  # return the best sequence
 
 
     def save_model(self, path: str):

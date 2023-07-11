@@ -53,7 +53,7 @@ class DecoderBlock(nn.Module):
         x = x + x_attn
         # MultiHeadAttention with q, k from encoder and x from decoder
         x = self.ln_2(x)
-        sliced_encoder_output = encoder_output[:, :-1]
+        sliced_encoder_output = encoder_output[:, :-1] if x.size(-1) != encoder_output.size(-1) else encoder_output
         x_attn, cross_attn = checkpoint(self.attn2, x, sliced_encoder_output, sliced_encoder_output, False, mask)
         x = x + x_attn
         # FeedForward
