@@ -33,13 +33,14 @@ class DecoderBlock(nn.Module):
         self.ln_3 = LayerNorm(config.n_embd, bias=config.bias)
         self.ffw = FeedForward(config)
 
-    def forward(self, x, encoder_output) -> torch.Tensor:
+    def forward(self, x, encoder_output, mask=None) -> torch.Tensor:
         """
         Defines the computation performed at every call.
 
         Args:
             - x (torch.Tensor): The input tensor to the forward pass.
             - encoder_output (torch.Tensor): The output tensor from the last encoder block.
+            - mask (torch.Tensor, optional): The mask tensor to ignore padding, size (B, 1, 1, T).
 
         Returns:
             - torch.Tensor: The output tensor of the block.
@@ -48,11 +49,12 @@ class DecoderBlock(nn.Module):
         """
         # Masked MultiHeadAttention
         x = self.ln_1(x)
-        x_attn, cross_attn = checkpoint(self.attn1, x, x, x, True)
+        x_attn, encoder_attn = checkpoint(self.attn1, x, x, x, True, mask)
         x = x + x_attn
         # MultiHeadAttention with q, k from encoder and x from decoder
         x = self.ln_2(x)
-        x_attn, encoder_attn = checkpoint(self.attn2, x, encoder_output, encoder_output)
+        sliced_encoder_output = encoder_output[:, :-1]
+        x_attn, cross_attn = checkpoint(self.attn2, x, sliced_encoder_output, sliced_encoder_output, False, mask)
         x = x + x_attn
         # FeedForward
         x = x + checkpoint(self.ffw, self.ln_3(x))

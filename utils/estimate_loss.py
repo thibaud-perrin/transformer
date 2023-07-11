@@ -38,10 +38,12 @@ def estimate_loss(model, dataset, config, splits = ['train', 'val']):
             # Sample a new batch of data
             n_batch = next(batch)
             X = n_batch['inputs']
+            X_mask = n_batch['inputs_mask']
             Y = n_batch['targets']
+            Y_mask = n_batch['targets_mask']
             
             # Evaluate the loss for the current batch
-            logits, loss = model(X, Y)
+            logits, loss = model(X, Y, X_mask, Y_mask)
 
             # Store the current loss
             losses[k] = loss.item()

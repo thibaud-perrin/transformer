@@ -86,13 +86,13 @@ class Encoder(nn.Module):
             # init Embedding layers with normal distribution (Gaussian initialization)
             torch.nn.init.normal_(module.weight, mean=0.0, std=0.02)
 
-    def forward(self, idx):
+    def forward(self, idx, mask=None):
         """
         Defines the computation performed at every call.
 
         Args:
             - idx (torch.Tensor): The input tensor to the forward pass.
-            - targets (torch.Tensor, optional): The target tensor against which the loss will be calculated.
+            - mask (torch.Tensor, optional): The mask tensor to ignore padding, size (B, 1, 1, T).
 
         Returns:
             - torch.Tensor: The output tensor (logits) of the model.
@@ -111,7 +111,7 @@ class Encoder(nn.Module):
         # encoders block
         encoder_attn_all = []
         for block in self.encoder.h:
-            x, encoder_attn = block(x)
+            x, encoder_attn = block(x, mask)
             encoder_attn_all.append(encoder_attn)
 
         return  self.encoder.ln_f(x), encoder_attn_all

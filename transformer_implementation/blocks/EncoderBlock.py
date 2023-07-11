@@ -28,12 +28,13 @@ class EncoderBlock(nn.Module):
         self.ln_2 = LayerNorm(config.n_embd, bias=config.bias)
         self.ffw = FeedForward(config)
 
-    def forward(self, x) -> torch.Tensor:
+    def forward(self, x, mask=None) -> torch.Tensor:
         """
         Defines the computation performed at every call.
 
         Args:
             - x (torch.Tensor): The input tensor to the forward pass.
+            - mask (torch.Tensor, optional): The mask tensor to ignore padding, size (B, 1, 1, T).
 
         Returns:
             - torch.Tensor: The output tensor of the block.
@@ -41,7 +42,7 @@ class EncoderBlock(nn.Module):
         """
         # MultiHeadAttention
         x = self.ln_1(x)
-        x_attn, decoder_attn = checkpoint(self.attn, x, x, x)
+        x_attn, decoder_attn = checkpoint(self.attn, x, x, x, False, mask)
         x = x + x_attn
         # FeedForward
         x = x + checkpoint(self.ffw, self.ln_2(x))

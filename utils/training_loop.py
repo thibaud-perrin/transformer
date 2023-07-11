@@ -63,10 +63,12 @@ def training_loop(model, optimizer, dataset, config, saved_path = "./out/transfo
         # Sample a new batch of data
         n_batch = next(batch)
         xb = n_batch['inputs']
+        xb_mask = n_batch['inputs_mask']
         yb = n_batch['targets']
+        yb_mask = n_batch['targets_mask']
     
         # Evaluate the loss
-        logits, loss = model(xb, yb)
+        logits, loss = model(xb, yb, xb_mask, yb_mask)
         # Reset gradients
         optimizer.zero_grad(set_to_none=True)
         # Perform backpropagation

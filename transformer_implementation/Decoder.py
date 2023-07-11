@@ -57,7 +57,7 @@ class Decoder(nn.Module):
                 torch.nn.init.normal_(p, mean=0.0, std=0.02/math.sqrt(2 * config.n_layer))
 
         # report number of parameters
-        print("number of parameters: %.2fM" % (self.get_num_params()/1e6,))
+        print("number of Decoder parameters: %.2fM" % (self.get_num_params()/1e6,))
 
     def get_num_params(self, non_embedding: bool = True) -> int:
         """
@@ -94,14 +94,14 @@ class Decoder(nn.Module):
             # init Embedding layers with normal distribution (Gaussian initialization)
             torch.nn.init.normal_(module.weight, mean=0.0, std=0.02)
 
-    def forward(self, idx, enc_output = None):
+    def forward(self, idx, enc_output=None, mask=None):
         """
         Defines the computation performed at every call.
 
         Args:
             - idx (torch.Tensor): The input tensor to the forward pass.
             - enc_output (torch.Tensor): The output tensor from the encoder.
-            - targets (torch.Tensor, optional): The target tensor against which the loss will be calculated.
+            - mask (torch.Tensor, optional): The mask tensor to ignore padding, size (B, 1, 1, T).
 
         Returns:
             - torch.Tensor: The output tensor (logits) of the model.
@@ -119,7 +119,7 @@ class Decoder(nn.Module):
         cross_attn_all = []
         decoder_attn_all = []
         for block in self.decoder.h:
-            x, encoder_attn, cross_attn = block(x, enc_output)
+            x, encoder_attn, cross_attn = block(x, enc_output, mask)
             decoder_attn_all.append(encoder_attn)
             cross_attn_all.append(cross_attn)
             

@@ -70,7 +70,7 @@ class Tokenizer():
         pad_tensor = torch.full((padding_size,), self.PAD_IDX, dtype=torch.long, device=device)
 
         # Add PAD and EOS tokens
-        tensor_sequence = torch.cat([tensor_sequence, pad_tensor, torch.tensor([self.EOS_IDX], dtype=torch.long, device=device)], dim=0)
+        tensor_sequence = torch.cat([tensor_sequence, torch.tensor([self.EOS_IDX], dtype=torch.long, device=device), pad_tensor], dim=0)
         
         return tensor_sequence
     
@@ -81,6 +81,11 @@ class Tokenizer():
         def check_special(number):
             return number not in [self.BOS_IDX, self.EOS_IDX, self.PAD_IDX]
         return list(filter(check_special, list_sequence))
+
+    def generate_padding_mask(self, seq):
+        # seq shape is (B, T) where B is batch size and T is sequence length
+        # padding mask should be of size (B, 1, 1, T), mask should be True for padding tokens and False for others
+        return (seq != self.PAD_IDX).unsqueeze(0).unsqueeze(0)
 
     def tokenize(self, sequence, device="cpu") -> list:
         """

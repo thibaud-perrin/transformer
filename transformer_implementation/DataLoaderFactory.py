@@ -25,14 +25,22 @@ class TranslationDataset(Dataset):
             - index (int): the index of the example to fetch.
 
         Returns:
-            - Dict: dictionary with keys 'inputs', 'targets' and 'translation', containing tokenized input,
+            - Dict: dictionary with keys 'inputs', 'inputs_mask', 'targets' , 'targets_mask' and 'translation', containing tokenized input,
             target sequences and original translation.
         """
         translation = self.dataset[index]['translation']
         encode = self.tokenizer.encoder.encode
         inputs = self.tokenizer.sequence_padding(encode(translation['en']), self.block_size) # source language
+        inputs_mask = self.tokenizer.generate_padding_mask(inputs)
         targets = self.tokenizer.sequence_padding(encode(translation['fr']), self.block_size) # target language
-        return {'inputs': inputs, 'targets': targets, 'translation': translation}
+        targets_mask = self.tokenizer.generate_padding_mask(targets)
+        return {
+            'inputs': inputs,
+            'inputs_mask': inputs_mask,
+            'targets': targets,
+            'targets_mask': targets_mask,
+            'translation': translation
+        }
 
     def __len__(self) -> int :
         """

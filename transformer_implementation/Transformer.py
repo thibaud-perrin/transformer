@@ -28,21 +28,27 @@ class Transformer(nn.Module):
         self.encoder = Encoder(config)
         self.decoder = Decoder(config)
 
-    def forward(self, src, tgt):
+        
+        # report number of parameters
+        print("Total number of parameters: %.2fM" % (self.encoder.get_num_params()/1e6 + self.decoder.get_num_params()/1e6,))
+
+    def forward(self, src, tgt, src_mask=None, tgt_mask=None):
         """
         Defines the computation performed at every call.
 
         Args:
             - src (torch.Tensor): The input tensor to the encoder.
             - tgt (torch.Tensor): The input tensor to the decoder.
+            - src_mask (torch.Tensor): The input_mask tensor to the encoder, size (B, 1, 1, T).
+            - tgt_mask (torch.Tensor): The target_masks tensor to the decoder, size (B, 1, 1, T).
 
         Returns:
             - torch.Tensor: The output tensor (logits) of the model.
             - torch.Tensor: The loss tensor calculated on the basis of the decoder's output and target tensor.
         """
-        enc_output, _ = self.encoder(src)
+        enc_output, _ = self.encoder(src, src_mask)
         tgt_shifted = tgt[:, :-1] # Shifted target
-        output, _, _ = self.decoder(tgt_shifted, enc_output)
+        output, _, _ = self.decoder(tgt_shifted, enc_output, tgt_mask[:, :, :, :-1])
 
         # Calculate the loss, using both the output and the target
         loss_fct = nn.CrossEntropyLoss(ignore_index=self.config.tokenizer.PAD_IDX) # Ignore padding tokens

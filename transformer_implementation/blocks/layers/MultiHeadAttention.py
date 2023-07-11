@@ -53,15 +53,15 @@ class MultiHeadAttention(nn.Module):
         self.flash = hasattr(torch.nn.functional, 'scaled_dot_product_attention')
         if not self.flash:
             print("WARNING: using slow attention. Flash Attention requires PyTorch >= 2.0")
-            # causal mask to ensure that attention is only applied to the left in the input sequence
-            self.register_buffer(
-                "bias",
-                torch.tril(
-                    torch.ones(config.block_size, config.block_size)
-                ).view(1, 1, config.block_size, config.block_size)
-            )
+        # causal mask to ensure that attention is only applied to the left in the input sequence
+        self.register_buffer(
+            "bias",
+            torch.tril(
+                torch.ones(config.block_size, config.block_size)
+            ).view(1, 1, config.block_size, config.block_size)
+        )
 
-    def scaled_dot_product_attention(self, q, k, v, mask: bool = None):
+    def scaled_dot_product_attention(self, q, k, v, mask: bool = None, is_casual = False):
         """
         Computes the scaled dot product attention.
         
@@ -77,15 +77,15 @@ class MultiHeadAttention(nn.Module):
         """
         # manual implementation of attention
         att = (q @ k.transpose(-2, -1)) * (1.0 / math.sqrt(k.size(-1))) # Step 1 & 2: (MatMul) and (Scale)
-        if mask:
-            att = att.masked_fill(self.bias[:,:,:T,:T] == 0, float('-inf'))
+        if mask is not None:
+            att = att.masked_fill(mask == 0, float('-inf'))
         att = F.softmax(att, dim=-1) # Step 3: Softmax
         att_weights = att  # Save attention weights for visualization
         att = self.attn_dropout(att)
         y = att @ v # (B, nh, T, T) x (B, nh, T, hs) -> (B, nh, T, hs) # Step 4: MatMul
         return y, att_weights
 
-    def forward(self, q_x, k_x, v_x, mask = None):
+    def forward(self, q_x, k_x, v_x, is_causal = False, mask = None):
         """
         Forward pass for the MultiHeadAttention module.
         
@@ -93,7 +93,8 @@ class MultiHeadAttention(nn.Module):
             - q_x (Tensor): Input query tensor of shape (batch_size, seq_length, emb_dim).
             - k_x (Tensor): Input key tensor of shape (batch_size, seq_length, emb_dim).
             - v_x (Tensor): Input value tensor of shape (batch_size, seq_length, emb_dim).
-            - mask (bool, optional): Flag indicating whether to apply mask on the attention scores.
+            - is_causal (bool, optional): Flag indicating whether to apply mask on the attention scores.
+            - mask (torch.Tensor, optional): The mask tensor to ignore padding, size (B, 1, 1, T).
 
         Returns:
             - y (Tensor): Output tensor after applying multi-head attention.
@@ -101,21 +102,36 @@ class MultiHeadAttention(nn.Module):
         """
         B_q, T_q, C_q = q_x.size() # batch size, sequence length, embedding dimensionality (n_embd)
         B_kv, T_kv, C_kv = k_x.size() # batch size, sequence length, embedding dimensionality (n_embd)
-        
+
         # calculate query, key, values for all heads in batch and move head forward to be the batch dim
         q, k, v = self.q_attn(q_x), self.k_attn(k_x), self.v_attn(v_x)
         k = k.view(B_kv, T_kv, self.n_head, C_kv // self.n_head).transpose(1, 2) # (B, nh, T, hs)
         q = q.view(B_q, T_q, self.n_head, C_q // self.n_head).transpose(1, 2) # (B, nh, T, hs)
         v = v.view(B_kv, T_kv, self.n_head, C_kv // self.n_head).transpose(1, 2) # (B, nh, T, hs)
 
+        # in case of is_casual (decoder) we are mixing triangular and padding mask
+        if mask is not None:
+            if is_causal:
+                attn_mask = mask * self.bias[:, :, :mask.size(-1), :mask.size(-1)]
+
         # causal self-attention; Self-attend: (B, nh, T, hs) x (B, nh, hs, T) -> (B, nh, T, T)
         if self.flash and not self.visualize:
+            
             # efficient attention using Flash Attention CUDA kernels
-            y = torch.nn.functional.scaled_dot_product_attention(q, k, v, attn_mask=None, dropout_p=self.dropout if self.training else 0, is_causal=mask == True)
+            y = torch.nn.functional.scaled_dot_product_attention(
+                q, k, v,
+                attn_mask=attn_mask if mask is not None and is_causal else mask,
+                dropout_p=self.dropout if self.training else 0,
+                is_causal=mask is None and is_causal == True
+            )
             attn_weights = None
         else:
             # manual implementation of attention
-            y, attn_weights = self.scaled_dot_product_attention(q, k, v)
+            y, attn_weights = self.scaled_dot_product_attention(
+                q, k, v,
+                attn_mask if mask is not None and is_causal else mask,
+                is_causal
+            )
         y = y.transpose(1, 2).contiguous().view(B_q, T_q, C_q) # re-assemble all head outputs side by side # Step 5: Concatenate
         # output projection
         y = self.resid_dropout(self.c_proj(y)) # Step 6 : Linear
