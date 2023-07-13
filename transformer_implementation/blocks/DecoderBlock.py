@@ -33,14 +33,15 @@ class DecoderBlock(nn.Module):
         self.ln_3 = LayerNorm(config.n_embd, bias=config.bias)
         self.ffw = FeedForward(config)
 
-    def forward(self, x, encoder_output, mask=None) -> torch.Tensor:
+    def forward(self, x, encoder_output, src_mask=None, tgt_mask=None) -> torch.Tensor:
         """
         Defines the computation performed at every call.
 
         Args:
             - x (torch.Tensor): The input tensor to the forward pass.
             - encoder_output (torch.Tensor): The output tensor from the last encoder block.
-            - mask (torch.Tensor, optional): The mask tensor to ignore padding, size (B, 1, 1, T).
+            - src_mask (torch.Tensor, optional): The mask tensor to ignore padding, size (B, 1, 1, T).
+            - tgt_mask (torch.Tensor, optional): The mask tensor to ignore padding, size (B, 1, 1, T).
 
         Returns:
             - torch.Tensor: The output tensor of the block.
@@ -49,13 +50,12 @@ class DecoderBlock(nn.Module):
         """
         # Masked MultiHeadAttention
         x = self.ln_1(x)
-        x_attn, encoder_attn = checkpoint(self.attn1, x, x, x, True, mask)
-        x = x + x_attn
+        x_attn, encoder_attn = checkpoint(self.attn1, x, x, x, True, tgt_mask)
+        x = self.ln_2(x + x_attn)
         # MultiHeadAttention with q, k from encoder and x from decoder
-        x = self.ln_2(x)
-        sliced_encoder_output = encoder_output[:, :-1] if x.size(-1) != encoder_output.size(-1) else encoder_output
-        x_attn, cross_attn = checkpoint(self.attn2, x, sliced_encoder_output, sliced_encoder_output, False, mask)
-        x = x + x_attn
+        # sliced_encoder_output = encoder_output[:, :-1] if x.size(-2) != encoder_output.size(-2) else encoder_output
+        x_attn, cross_attn = checkpoint(self.attn2, x, encoder_output, encoder_output, False, src_mask)
+        x = self.ln_3(x + x_attn)
         # FeedForward
-        x = x + checkpoint(self.ffw, self.ln_3(x))
+        x = x + checkpoint(self.ffw, x)
         return x, encoder_attn, cross_attn

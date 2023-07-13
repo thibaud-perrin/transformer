@@ -82,10 +82,15 @@ class Tokenizer():
             return number not in [self.BOS_IDX, self.EOS_IDX, self.PAD_IDX]
         return list(filter(check_special, list_sequence))
 
-    def generate_padding_mask(self, seq):
+    def generate_padding_mask(self, seq, triu = False, device="cpu"):
         # seq shape is (B, T) where B is batch size and T is sequence length
         # padding mask should be of size (B, 1, 1, T), mask should be True for padding tokens and False for others
-        return (seq != self.PAD_IDX).unsqueeze(0).unsqueeze(0)
+        mask = (seq != self.PAD_IDX).unsqueeze(0).unsqueeze(0).to(device)
+        if triu:
+            seq_length = seq.size(1)
+            nopeak_mask = (1 - torch.triu(torch.ones(1, seq_length, seq_length), diagonal=1)).bool().to(device)
+            mask = mask & nopeak_mask
+        return mask.to(device)
 
     def tokenize(self, sequence, device="cpu") -> list:
         """

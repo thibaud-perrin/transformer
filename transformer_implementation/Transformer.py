@@ -46,9 +46,15 @@ class Transformer(nn.Module):
             - torch.Tensor: The output tensor (logits) of the model.
             - torch.Tensor: The loss tensor calculated on the basis of the decoder's output and target tensor.
         """
+        assert src.dim() == 2 and tgt.dim() == 2, "src and tgt should be 2D (B, S)"
+        if src_mask is not None:
+            assert src_mask.dim() == 4, "src_mask should be 4D (B, 1, 1, S)"
+        if tgt_mask is not None:
+            assert tgt_mask.dim() == 4, "tgt_mask should be 4D (B, 1, 1 S)"
+
         enc_output, _ = self.encoder(src, src_mask)
         tgt_shifted = tgt[:, :-1] # Shifted target
-        output, _, _ = self.decoder(tgt_shifted, enc_output, tgt_mask[:, :, :, :-1])
+        output, _, _ = self.decoder(tgt_shifted, enc_output, src_mask, tgt_mask[:, :, :, :-1])
 
         # Calculate the loss, using both the output and the target
         loss_fct = nn.CrossEntropyLoss(ignore_index=self.config.tokenizer.PAD_IDX) # Ignore padding tokens
@@ -56,18 +62,70 @@ class Transformer(nn.Module):
         tgt_tgt = tgt[:, 1:].contiguous()
         loss = loss_fct(output.view(-1, output.size(-1)), tgt_tgt.view(-1))
         return output, loss
-        
+
+
     @torch.no_grad()
-    def translate_beam_search(self, src, temperature=1.0, top_k=None, src_mask=None):
+    def inference(self, src, src_mask=None, tgt_mask=None, max_length=20, top_p=0.95):
         """
-        Generates translations of the source sequences using beam search.
+        Generates a sequence translation based on the input source sequence using Top P sampling.
 
         Args:
-            - src (torch.Tensor): The source sequences to translate.
-            - beam_size (int, optional): The number of beams to use in beam search. Default is 5.
-            - temperature (float): control the randomness of predictions.
+            - src (torch.Tensor): The input source sequence.
             - src_mask (torch.Tensor): The input_mask tensor to the encoder, size (B, 1, 1, T).
+            - tgt_mask (torch.Tensor): The target_masks tensor to the decoder, size (B, 1, 1, T).
+            - max_length (int): The maximum length of the generated sequence.
+            - top_p (float): The top-p probability threshold for sampling.
+            - temperature (float): The temperature value for sampling.
 
+        Returns:
+            - str: The generated sequence translation.
+        """
+        assert src.dim() == 2, "src should be 2D (B, S)"
+        if src_mask is not None:
+            assert src_mask.dim() == 4, "src_mask should be 4D (B, 1, 1, S)"
+
+        device = self.config.device
+        
+        enc_output, encoder_attn = self.encoder(src, src_mask)
+
+        # Initialize the target sequence with the start token
+        output_seq = [self.config.tokenizer.BOS_IDX]
+
+        # For each possible position in the output sequence...
+        for iter in range(max_length):
+            # Convert the output sequence list to a tensor
+            tgt_tensor = torch.LongTensor(output_seq).unsqueeze(0).to(device)
+            
+            print(f"\r{iter+1}/{self.config.block_size}", end="")
+            
+            # Create a target mask
+            tgt_mask = self.config.tokenizer.generate_padding_mask(tgt_tensor, True, device)
+
+            # Decode the encoded source sequence
+            output, dec_attention, cross_attention = self.decoder(tgt_tensor, enc_output, src_mask, tgt_mask)
+
+            # Take the last token of the output sequence
+            output_token = output.argmax(2)[:, -1].item()
+            
+            # Append the output token to the output sequence
+            output_seq.append(output_token)
+
+            # Break the loop if the output token is the end-of-sequence token
+            if output_token == self.config.tokenizer.EOS_IDX:
+                break
+        # Convert the generated target sequence to a string
+        return tgt_tensor, dict(encoder_attn=encoder_attn, decoder_attn=dec_attention, cross_attn=cross_attention)
+        
+    @torch.no_grad()
+    def generate(self, src, p=0.9, src_mask=None):
+        """
+        Generate a sequence of words using Top-p sampling.
+    
+        Args:
+            - src (torch.Tensor): The source sequences to translate.
+            - p (float): The cumulative probability threshold for Top-p sampling.
+            - src_mask (torch.Tensor): The input_mask tensor to the encoder, size (B, 1, 1, T).
+    
         Returns:
             - Tuple[torch.Tensor, Dict[str, torch.Tensor]]: The best sequence found by beam search and a dictionary containing the attention weights.
         """
@@ -76,57 +134,19 @@ class Transformer(nn.Module):
         idx = torch.full((src.size(0), 1), self.config.tokenizer.BOS_IDX).long().to(src.device)
 
         for iter in range(self.config.block_size):
-            print(f"\r{iter+1}/{self.config.block_size}", end="")
-            output, dec_attention, cross_attention = self.decoder(idx, enc_output)
-            # scale logits by desired temperature and apply softmax
-            logits = output[:, -1, :] / temperature
-            # optionally crop the logits to only the top k options
-            if top_k is not None:
-                v, _ = torch.topk(logits, min(top_k, logits.size(-1)))
-                logits[logits < v[:, [-1]]] = -float('Inf')
-            probs = F.softmax(logits, dim=-1)
-            # sample from the distribution
-            idx_next = torch.multinomial(probs, num_samples=1)
-            # append sampled index to the running sequence and continue
-            idx = torch.cat((idx, idx_next), dim=1)
+            print(f"\r{iter+1}/{self.config.block_size} idx={idx}", end="")
+            outputs, dec_attention, cross_attention = self.decoder(idx, enc_output)
 
-            # Stop generating when EOS token is sampled
-            if idx[0][-1].item() == self.config.tokenizer.EOS_IDX:
-                break
+            # Get the next token probabilities
+            next_token_logits = outputs[:, -1, :]
+    
+            # Sample a token with Top-p sampling
+            next_token = self.__top_p_sampling(next_token_logits, p=p)
+    
+            # Append the sampled token to the idx
+            idx = torch.cat([idx, next_token], dim=-1)
 
         return idx, dict(encoder_attn=encoder_attn, decoder_attn=dec_attention, cross_attn=cross_attention)
-        
-        # for iter in range(self.config.block_size):
-        #     print(f"\r{iter+1}/{self.config.block_size}", end="")
-        #     new_beams = []
-        #     for beam, score, decoder_attentions, cross_attentions in beams:
-        #         if beam[0][-1].item() == self.config.tokenizer.EOS_IDX:  # Check if the beam has ended (i.e., EOS token is generated)
-        #             new_beams.append((beam, score, decoder_attentions, cross_attentions))
-        #             continue
-                    
-        #         output, dec_attention, cross_attention = self.decoder(beam, enc_output)
-        #         output = output / temperature  # apply temperature
-        #         output = F.log_softmax(output[:, -1, :], dim=-1)
-    
-        #         # optionally crop the logits to only the top k options
-        #         if top_k is not None:
-        #             v, _ = torch.topk(output, min(top_k, output.size(-1)))
-        #             output[output < v[:, [-1]]] = -float('Inf')
-
-        #         probs = F.softmax(output, dim=-1)
-        #         top_scores, top_indices = torch.topk(probs, beam_size, dim=-1)
-                
-        #         for i in range(beam_size):
-        #             next_token = top_indices[:, i].unsqueeze(1)  # get next token
-        #             next_score = top_scores[:, i].unsqueeze(1)  # get next score
-        #             new_beam = torch.cat((beam, next_token), dim=-1)  # generate new beam
-        #             new_score = score + next_score  # calculate new score
-                    
-        #             new_beams.append((new_beam, new_score, dec_attention, cross_attention))  # append new beam to new beams
-        #     # sort all candidates by score
-        #     beams = sorted(new_beams, key=lambda tup: tup[1].sum(), reverse=True)[:beam_size]  # keep top performing beams
-        # return beams[0][0], dict(encoder_attn=encoder_attn, decoder_attn=beams[0][2], cross_attn=beams[0][3])  # return the best sequence
-
 
     def save_model(self, path: str):
         """

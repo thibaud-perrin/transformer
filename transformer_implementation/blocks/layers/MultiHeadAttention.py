@@ -81,7 +81,8 @@ class MultiHeadAttention(nn.Module):
             att = att.masked_fill(mask == 0, float('-inf'))
         att = F.softmax(att, dim=-1) # Step 3: Softmax
         att_weights = att  # Save attention weights for visualization
-        att = self.attn_dropout(att)
+        if self.training:
+            att = self.attn_dropout(att)
         y = att @ v # (B, nh, T, T) x (B, nh, T, hs) -> (B, nh, T, hs) # Step 4: MatMul
         return y, att_weights
 
@@ -110,10 +111,10 @@ class MultiHeadAttention(nn.Module):
         v = v.view(B_kv, T_kv, self.n_head, C_kv // self.n_head).transpose(1, 2) # (B, nh, T, hs)
 
         # in case of is_casual (decoder) we are mixing triangular and padding mask
-        if mask is not None:
-            if is_causal:
-                attn_mask = mask * self.bias[:, :, :mask.size(-1), :mask.size(-1)]
-
+        # if mask is not None:
+        #     if is_causal:
+        #         attn_mask = mask * self.bias[:, :, :mask.size(-1), :mask.size(-1)]
+        attn_mask = mask
         # causal self-attention; Self-attend: (B, nh, T, hs) x (B, nh, hs, T) -> (B, nh, T, T)
         if self.flash and not self.visualize:
             

@@ -94,14 +94,15 @@ class Decoder(nn.Module):
             # init Embedding layers with normal distribution (Gaussian initialization)
             torch.nn.init.normal_(module.weight, mean=0.0, std=0.02)
 
-    def forward(self, idx, enc_output=None, mask=None):
+    def forward(self, idx, enc_output=None, src_mask=None, tgt_mask=None):
         """
         Defines the computation performed at every call.
 
         Args:
             - idx (torch.Tensor): The input tensor to the forward pass.
             - enc_output (torch.Tensor): The output tensor from the encoder.
-            - mask (torch.Tensor, optional): The mask tensor to ignore padding, size (B, 1, 1, T).
+            - src_mask (torch.Tensor, optional): The mask tensor to ignore padding, size (B, 1, 1, T).
+            - tgt_mask (torch.Tensor, optional): The mask tensor to ignore padding, size (B, 1, 1, T).
 
         Returns:
             - torch.Tensor: The output tensor (logits) of the model.
@@ -119,7 +120,7 @@ class Decoder(nn.Module):
         cross_attn_all = []
         decoder_attn_all = []
         for block in self.decoder.h:
-            x, encoder_attn, cross_attn = block(x, enc_output, mask)
+            x, encoder_attn, cross_attn = block(x, enc_output, src_mask, tgt_mask)
             decoder_attn_all.append(encoder_attn)
             cross_attn_all.append(cross_attn)
             

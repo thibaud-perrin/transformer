@@ -19,9 +19,10 @@ class TransformerConfig:
             If False, it is a bit better and faster. Defaults to False.
         - device (str): The device to run the model on. Defaults to 'cpu'. 'cuda' is used if a GPU is available.
         - learning_rate (float): Learning rate for the model optimization. Defaults to 3e-4.
+        - max_epochs (int): Number of training epochs.
         - max_iters (int): Number of training steps. Defaults to 20.
-        - eval_interval (int): Number of steps between each validation dataset. Defaults to 5.
         - eval_iters (int): Number of validation epochs. Defaults to 20.
+        - train_data_size (int): Size of train data.
         - visualize (bool): Define if we want to get the attention scores.
     """
     tokenizer: any
@@ -34,9 +35,10 @@ class TransformerConfig:
     bias: bool = False # True:
     device: str = 'cuda' if torch.cuda.is_available() else 'cpu'
     learning_rate = 3e-4
+    max_epochs: int = 100
     max_iters: int = 2000
-    eval_interval: int = 200
     eval_iters: int = 20 # 200
+    train_data_size: int = 5000000
     visualize: bool = False
 
     @property
@@ -61,9 +63,11 @@ class TransformerConfig:
             f"\t{self.bias=},\n"
             f"\t{self.device=},\n"
             f"\t{self.learning_rate=},\n"
+            f"\t{self.max_epochs=},\n"
             f"\t{self.max_iters=},\n"
-            f"\t{self.eval_interval=},\n"
             f"\t{self.eval_iters=},\n"
+            f"\t{self.train_data_size=},\n"
             f"\t{self.visualize=},\n"
+            f"\t{self.vocab_size=},\n"
             f")"
         )

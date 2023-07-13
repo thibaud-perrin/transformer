@@ -33,7 +33,7 @@ class TranslationDataset(Dataset):
         inputs = self.tokenizer.sequence_padding(encode(translation['en']), self.block_size) # source language
         inputs_mask = self.tokenizer.generate_padding_mask(inputs)
         targets = self.tokenizer.sequence_padding(encode(translation['fr']), self.block_size) # target language
-        targets_mask = self.tokenizer.generate_padding_mask(targets)
+        targets_mask = self.tokenizer.generate_padding_mask(targets, True)
         return {
             'inputs': inputs,
             'inputs_mask': inputs_mask,
