@@ -87,7 +87,7 @@ class Tokenizer():
         # padding mask should be of size (B, 1, 1, T), mask should be True for padding tokens and False for others
         mask = (seq != self.PAD_IDX).unsqueeze(0).unsqueeze(0).to(device)
         if triu:
-            seq_length = seq.size(1)
+            seq_length = seq.size(-1)
             nopeak_mask = (1 - torch.triu(torch.ones(1, seq_length, seq_length), diagonal=1)).bool().to(device)
             mask = mask & nopeak_mask
         return mask.to(device)

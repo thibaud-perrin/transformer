@@ -49,7 +49,7 @@ def training_loop(model, optimizer, dataset, config, saved_path = "./out/transfo
     best_loss = float('inf')
     val_loss = float('inf')
     # This is the number of epochs with no improvement after which training will be stopped.
-    patience = 5
+    patience = 3
     # This is used to keep track of the number of epochs without improvement.
     patience_counter = 0
 
@@ -99,7 +99,7 @@ def training_loop(model, optimizer, dataset, config, saved_path = "./out/transfo
         ############
         # early stop
         ############
-        val_loss = losses['train'] # TODO switch to val
+        val_loss = losses['val']
         if val_loss < best_loss:
             torch.save(model.module.state_dict(), saved_path)
             best_loss = val_loss

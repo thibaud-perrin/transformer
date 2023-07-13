@@ -54,7 +54,7 @@ class Transformer(nn.Module):
 
         enc_output, _ = self.encoder(src, src_mask)
         tgt_shifted = tgt[:, :-1] # Shifted target
-        output, _, _ = self.decoder(tgt_shifted, enc_output, src_mask, tgt_mask[:, :, :, :-1])
+        output, _, _ = self.decoder(tgt_shifted, enc_output, src_mask, tgt_mask[:, :, :-1, :-1])
 
         # Calculate the loss, using both the output and the target
         loss_fct = nn.CrossEntropyLoss(ignore_index=self.config.tokenizer.PAD_IDX) # Ignore padding tokens
