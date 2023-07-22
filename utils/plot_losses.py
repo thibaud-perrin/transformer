@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 
-def plot_losses(losses):
+def plot_losses(losses, xlim = None, ylim = None):
     """
     Plots the losses for training and validation with more vibrant colors on a black background.
 
@@ -17,5 +17,9 @@ def plot_losses(losses):
     plt.plot(val_losses, label='Validation loss', color='lime')
     plt.xlabel("Epochs", color='white')
     plt.ylabel("Loss", color='white')
+    if xlim is not None:
+        plt.xlim(xlim)
+    if ylim is not None:
+        plt.ylim(ylim)
     plt.legend()
     plt.show()

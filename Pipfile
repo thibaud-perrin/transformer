@@ -21,6 +21,8 @@ sphinx = "*"
 seaborn = "*"
 bertviz = "*"
 tqdm = "*"
+torchsummary = "*"
+gputil = "*"
 
 [dev-packages]
 

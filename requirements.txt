@@ -13,3 +13,4 @@ tiktoken
 sphinx
 bertviz
 tqdm
+torchsummary
