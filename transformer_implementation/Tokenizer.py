@@ -104,7 +104,7 @@ class Tokenizer():
             list: The processed sequence converted in a list of tokens in string format.
         """
         # Ensure the sequence is a torch tensor
-        tensor_sequence = torch.tensor(sequence, dtype=torch.long).to(device) if not torch.is_tensor(sequence) else sequence.to(device)
+        tensor_sequence = torch.tensor(sequence, dtype=torch.long).to(device) if not torch.is_tensor(self.sequence_cleaner(sequence)) else sequence.to(device)
         # create batch of idx tokens
         tensor_sequence = tensor_sequence.unsqueeze(0).T
         # decode all batch to recreate list of separated tokens 
