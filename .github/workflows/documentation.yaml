@@ -14,13 +14,12 @@ jobs:
       - name: sphinx-apidoc
         run: |
           sphinx-apidoc -f -o docs/source/ .
-      - name: ls
+      - name: Build documentation
         working-directory: ./docs
         run: |
           ls
-      - name: make html
-        working-directory: ./docs
-        run: |
+          cat Makefile
+          sphinx-build --version
           make html
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
