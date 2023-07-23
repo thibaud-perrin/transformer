@@ -6,25 +6,45 @@ from . import LayerNorm, MultiHeadAttention, FeedForward
 
 class DecoderBlock(nn.Module):
     """
-    A class that implements a single decoder block in the Transformer model.
-
-    Each block consists of three sub-layers: a multi-head self-attention mechanism,
-    a multi-head attention mechanism over the encoder's output, and a position-wise 
-    fully connected feed-forward network. There is a residual connection around 
-    each of the three sub-layers, followed by layer normalization.
-
-    Attributes:
-        - ln_1 (LayerNorm): Layer normalization before the first multi-head attention layer.
-        - attn1 (MultiHeadAttention): First multi-head attention layer, with self-attention.
-        - ln_2 (LayerNorm): Layer normalization before the second multi-head attention layer.
-        - attn2 (MultiHeadAttention): Second multi-head attention layer, attends to encoder outputs.
-        - ln_3 (LayerNorm): Layer normalization before the feed-forward network.
-        - ffw (FeedForward): Position-wise feed-forward network.
-
-    Args:
-        config (Config): A configuration object with attribute `n_embd` and `bias`.
+    Implements a decoder block module in PyTorch, as part of a transformer architecture.
+    
+    This class is a child of the PyTorch nn.Module class. It includes self-attention,
+    cross-attention with the encoder's output, and a feed-forward network.
+    
+    Attributes
+    ----------
+    ln_1, ln_2, ln_3 : LayerNorm
+        Layer normalization layers that normalize the input tensor before the attention
+        and feed-forward networks.
+    attn1, attn2 : MultiHeadAttention
+        Multi-head attention layers. attn1 is for self-attention, while attn2 is for
+        cross-attention with the encoder's output.
+    ffw : FeedForward
+        The feed-forward network layer.
+    
+    Methods
+    -------
+    forward(x: torch.Tensor, encoder_output: torch.Tensor, src_mask: Optional[torch.Tensor]=None, tgt_mask: Optional[torch.Tensor]=None) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:
+        Computes the forward pass of the network.
+    
+    Parameters
+    ----------
+    config : object
+        A configuration object with the following attribute:
+            n_embd (int): The size of the input and output feature vectors.
+            bias (bool): If True, the layer normalization will include a bias term.
     """
     def __init__(self, config):
+        """
+        Initializes the decoder block with the given configuration.
+        
+        Parameters
+        ----------
+        config : object
+            A configuration object with the following attribute:
+                n_embd (int): The size of the input and output feature vectors.
+                bias (bool): If True, the layer normalization will include a bias term.
+        """
         super().__init__()
         self.ln_1 = LayerNorm(config.n_embd, bias=config.bias)
         self.attn1 = MultiHeadAttention(config)
@@ -35,18 +55,25 @@ class DecoderBlock(nn.Module):
 
     def forward(self, x, encoder_output, src_mask=None, tgt_mask=None) -> torch.Tensor:
         """
-        Defines the computation performed at every call.
-
-        Args:
-            - x (torch.Tensor): The input tensor to the forward pass.
-            - encoder_output (torch.Tensor): The output tensor from the last encoder block.
-            - src_mask (torch.Tensor, optional): The mask tensor to ignore padding, size (B, 1, 1, T).
-            - tgt_mask (torch.Tensor, optional): The mask tensor to ignore padding, size (B, 1, 1, T).
-
-        Returns:
-            - torch.Tensor: The output tensor of the block.
-            - encoder_attn: The encoder attention weight of the current block.
-            - cross_attn: The cross attention weight of the current block.
+        Implements the forward pass of the decoder block. The method applies self-attention,
+        cross-attention with the encoder's output, and a feed-forward network to the input tensor.
+        
+        Parameters
+        ----------
+        x : torch.Tensor
+            The input tensor from the previous decoder block or the embedding layer.
+        encoder_output : torch.Tensor
+            The output tensor from the encoder.
+        src_mask : Optional[torch.Tensor], default=None
+            The source mask tensor. If provided, it will be used in the cross-attention layer.
+        tgt_mask : Optional[torch.Tensor], default=None
+            The target mask tensor. If provided, it will be used in the self-attention layer.
+        
+        Returns
+        -------
+        Tuple[torch.Tensor, torch.Tensor, torch.Tensor]
+            The output tensor from the decoder block, and the attention matrices from the 
+            self-attention and cross-attention layers.
         """
         # Masked MultiHeadAttention
         x = self.ln_1(x)

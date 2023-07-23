@@ -20,6 +20,14 @@ utils.plot\_losses module
    :undoc-members:
    :show-inheritance:
 
+utils.training\_loop module
+---------------------------
+
+.. automodule:: utils.training_loop
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Module contents
 ---------------
 

@@ -76,43 +76,68 @@
 <dt class="sig sig-object py" id="transformer_implementation.blocks.DecoderBlock.DecoderBlock">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">transformer_implementation.blocks.DecoderBlock.</span></span><span class="sig-name descname"><span class="pre">DecoderBlock</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#transformer_implementation.blocks.DecoderBlock.DecoderBlock" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
-<p>A class that implements a single decoder block in the Transformer model.</p>
-<p>Each block consists of three sub-layers: a multi-head self-attention mechanism,
-a multi-head attention mechanism over the encoder’s output, and a position-wise 
-fully connected feed-forward network. There is a residual connection around 
-each of the three sub-layers, followed by layer normalization.</p>
+<p>Implements a decoder block module in PyTorch, as part of a transformer architecture.</p>
+<p>This class is a child of the PyTorch nn.Module class. It includes self-attention,
+cross-attention with the encoder’s output, and a feed-forward network.</p>
+<section id="attributes">
+<h3>Attributes<a class="headerlink" href="#attributes" title="Permalink to this heading">¶</a></h3>
 <dl class="simple">
-<dt>Attributes:</dt><dd><ul class="simple">
-<li><p>ln_1 (LayerNorm): Layer normalization before the first multi-head attention layer.</p></li>
-<li><p>attn1 (MultiHeadAttention): First multi-head attention layer, with self-attention.</p></li>
-<li><p>ln_2 (LayerNorm): Layer normalization before the second multi-head attention layer.</p></li>
-<li><p>attn2 (MultiHeadAttention): Second multi-head attention layer, attends to encoder outputs.</p></li>
-<li><p>ln_3 (LayerNorm): Layer normalization before the feed-forward network.</p></li>
-<li><p>ffw (FeedForward): Position-wise feed-forward network.</p></li>
-</ul>
+<dt>ln_1, ln_2, ln_3<span class="classifier">LayerNorm</span></dt><dd><p>Layer normalization layers that normalize the input tensor before the attention
+and feed-forward networks.</p>
 </dd>
-<dt>Args:</dt><dd><p>config (Config): A configuration object with attribute <cite>n_embd</cite> and <cite>bias</cite>.</p>
+<dt>attn1, attn2<span class="classifier">MultiHeadAttention</span></dt><dd><p>Multi-head attention layers. attn1 is for self-attention, while attn2 is for
+cross-attention with the encoder’s output.</p>
+</dd>
+<dt>ffw<span class="classifier">FeedForward</span></dt><dd><p>The feed-forward network layer.</p>
+</dd>
+</dl>
+</section>
+<section id="methods">
+<h3>Methods<a class="headerlink" href="#methods" title="Permalink to this heading">¶</a></h3>
+<dl class="simple">
+<dt>forward(x: torch.Tensor, encoder_output: torch.Tensor, src_mask: Optional[torch.Tensor]=None, tgt_mask: Optional[torch.Tensor]=None) -&gt; Tuple[torch.Tensor, torch.Tensor, torch.Tensor]:</dt><dd><p>Computes the forward pass of the network.</p>
+</dd>
+</dl>
+</section>
+<section id="parameters">
+<h3>Parameters<a class="headerlink" href="#parameters" title="Permalink to this heading">¶</a></h3>
+<dl class="simple">
+<dt>config<span class="classifier">object</span></dt><dd><dl class="simple">
+<dt>A configuration object with the following attribute:</dt><dd><p>n_embd (int): The size of the input and output feature vectors.
+bias (bool): If True, the layer normalization will include a bias term.</p>
+</dd>
+</dl>
 </dd>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="transformer_implementation.blocks.DecoderBlock.DecoderBlock.forward">
-<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoder_output</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#transformer_implementation.blocks.DecoderBlock.DecoderBlock.forward" title="Permalink to this definition">¶</a></dt>
-<dd><p>Defines the computation performed at every call.</p>
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">encoder_output</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">src_mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tgt_mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#transformer_implementation.blocks.DecoderBlock.DecoderBlock.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implements the forward pass of the decoder block. The method applies self-attention,
+cross-attention with the encoder’s output, and a feed-forward network to the input tensor.</p>
+<section id="id1">
+<h4>Parameters<a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h4>
 <dl class="simple">
-<dt>Args:</dt><dd><ul class="simple">
-<li><p>x (torch.Tensor): The input tensor to the forward pass.</p></li>
-<li><p>encoder_output (torch.Tensor): The output tensor from the last encoder block.</p></li>
-</ul>
+<dt>x<span class="classifier">torch.Tensor</span></dt><dd><p>The input tensor from the previous decoder block or the embedding layer.</p>
 </dd>
-<dt>Returns:</dt><dd><ul class="simple">
-<li><p>torch.Tensor: The output tensor of the block.</p></li>
-<li><p>encoder_attn: The encoder attention weight of the current block.</p></li>
-<li><p>cross_attn: The cross attention weight of the current block.</p></li>
-</ul>
+<dt>encoder_output<span class="classifier">torch.Tensor</span></dt><dd><p>The output tensor from the encoder.</p>
+</dd>
+<dt>src_mask<span class="classifier">Optional[torch.Tensor], default=None</span></dt><dd><p>The source mask tensor. If provided, it will be used in the cross-attention layer.</p>
+</dd>
+<dt>tgt_mask<span class="classifier">Optional[torch.Tensor], default=None</span></dt><dd><p>The target mask tensor. If provided, it will be used in the self-attention layer.</p>
 </dd>
 </dl>
+</section>
+<section id="returns">
+<h4>Returns<a class="headerlink" href="#returns" title="Permalink to this heading">¶</a></h4>
+<dl class="simple">
+<dt>Tuple[torch.Tensor, torch.Tensor, torch.Tensor]</dt><dd><p>The output tensor from the decoder block, and the attention matrices from the 
+self-attention and cross-attention layers.</p>
+</dd>
+</dl>
+</section>
 </dd></dl>
 
+</section>
 </dd></dl>
 
 </section>
@@ -122,40 +147,68 @@ each of the three sub-layers, followed by layer normalization.</p>
 <dt class="sig sig-object py" id="transformer_implementation.blocks.EncoderBlock.EncoderBlock">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">transformer_implementation.blocks.EncoderBlock.</span></span><span class="sig-name descname"><span class="pre">EncoderBlock</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#transformer_implementation.blocks.EncoderBlock.EncoderBlock" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
-<p>A class that implements a single encoder block in the Transformer model.</p>
-<p>Each block consists of two sub-layers: a multi-head self-attention mechanism,
-and a position-wise fully connected feed-forward network. There is a residual 
-connection around each of the two sub-layers, followed by layer normalization.</p>
+<p>Implements an encoder block of a Transformer model in PyTorch.</p>
+<p>This class is a child of the PyTorch nn.Module class. It consists of 
+two main components: multi-head attention and feed-forward neural network,
+each followed by a layer normalization.</p>
+<section id="id2">
+<h3>Attributes<a class="headerlink" href="#id2" title="Permalink to this heading">¶</a></h3>
 <dl class="simple">
-<dt>Attributes:</dt><dd><ul class="simple">
-<li><p>ln_1 (LayerNorm): Layer normalization before the multi-head attention layer.</p></li>
-<li><p>attn (MultiHeadAttention): Multi-head attention layer.</p></li>
-<li><p>ln_2 (LayerNorm): Layer normalization before the feed-forward network.</p></li>
-<li><p>ffw (FeedForward): Position-wise feed-forward network.</p></li>
-</ul>
+<dt>ln_1<span class="classifier">LayerNorm</span></dt><dd><p>Layer normalization before the multi-head attention block.</p>
 </dd>
-<dt>Args:</dt><dd><ul class="simple">
-<li><p>config (Config): A configuration object with attribute <cite>n_embd</cite> and <cite>bias</cite>.</p></li>
-</ul>
+<dt>attn<span class="classifier">MultiHeadAttention</span></dt><dd><p>Multi-head attention block.</p>
+</dd>
+<dt>ln_2<span class="classifier">LayerNorm</span></dt><dd><p>Layer normalization before the feed-forward neural network block.</p>
+</dd>
+<dt>ffw<span class="classifier">FeedForward</span></dt><dd><p>Feed-forward neural network block.</p>
+</dd>
+</dl>
+</section>
+<section id="id3">
+<h3>Methods<a class="headerlink" href="#id3" title="Permalink to this heading">¶</a></h3>
+<dl class="simple">
+<dt>forward(x: torch.Tensor, mask: Optional[torch.Tensor]=None) -&gt; Tuple[torch.Tensor, torch.Tensor]:</dt><dd><p>Computes the forward pass of the encoder block.</p>
+</dd>
+</dl>
+</section>
+<section id="id4">
+<h3>Parameters<a class="headerlink" href="#id4" title="Permalink to this heading">¶</a></h3>
+<dl class="simple">
+<dt>config<span class="classifier">object</span></dt><dd><dl class="simple">
+<dt>A configuration object with the following attribute:</dt><dd><p>n_embd (int): The size of the input and output feature vectors.
+bias (bool): If True, the layer normalization layers will include a bias term.</p>
+</dd>
+</dl>
 </dd>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="transformer_implementation.blocks.EncoderBlock.EncoderBlock.forward">
-<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#transformer_implementation.blocks.EncoderBlock.EncoderBlock.forward" title="Permalink to this definition">¶</a></dt>
-<dd><p>Defines the computation performed at every call.</p>
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#transformer_implementation.blocks.EncoderBlock.EncoderBlock.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implements the forward pass of the encoder block.</p>
+<p>First, it applies layer normalization and then applies multi-head attention. 
+The input is then added to the output of the multi-head attention and passed 
+through another layer normalization. Finally, it applies the feed-forward network 
+and adds its output to the input of the feed-forward network.</p>
+<section id="id5">
+<h4>Parameters<a class="headerlink" href="#id5" title="Permalink to this heading">¶</a></h4>
 <dl class="simple">
-<dt>Args:</dt><dd><ul class="simple">
-<li><p>x (torch.Tensor): The input tensor to the forward pass.</p></li>
-</ul>
+<dt>x<span class="classifier">torch.Tensor</span></dt><dd><p>The input tensor with a size of n_embd.</p>
 </dd>
-<dt>Returns:</dt><dd><ul class="simple">
-<li><p>torch.Tensor: The output tensor of the block.</p></li>
-<li><p>decoder_attn: The attention weight of the current block.</p></li>
-</ul>
+<dt>mask<span class="classifier">Optional[torch.Tensor]</span></dt><dd><p>An optional mask tensor to be applied on the attention mechanism.</p>
 </dd>
 </dl>
+</section>
+<section id="id6">
+<h4>Returns<a class="headerlink" href="#id6" title="Permalink to this heading">¶</a></h4>
+<dl class="simple">
+<dt>Tuple[torch.Tensor, torch.Tensor]</dt><dd><p>The output tensor from the encoder block and the attention tensor from 
+the decoder block.</p>
+</dd>
+</dl>
+</section>
 </dd></dl>
 
+</section>
 </dd></dl>
 
 </section>

@@ -5,28 +5,67 @@ import torch.nn.functional as F
 
 class MultiHeadAttention(nn.Module):
     """
-    Multi-Head Attention module.
+    Implements a multi-head attention module in PyTorch.
     
-    This module applies multi-head attention mechanism on the input sequence. This implementation doesn't apply mask over the attention scores.
-    
-    Attributes:
-        - n_head (int): Number of attention heads.
-        - n_embd (int): Embedding dimensionality.
-        - dropout (float): Dropout rate.
-        - q_attn (nn.Linear): Linear layer for the query projection.
-        - k_attn (nn.Linear): Linear layer for the key projection.
-        - v_attn (nn.Linear): Linear layer for the value projection.
-        - c_proj (nn.Linear): Linear layer for the output projection.
-        - attn_dropout (nn.Dropout): Dropout layer for the attention scores.
-        - resid_dropout (nn.Dropout): Dropout layer for the residual connection.
-        - flash (bool): Flag indicating if flash attention is available.
+    This class is a child of the PyTorch nn.Module class. It uses scaled dot 
+    product attention mechanism and includes dropout for regularization.
+
+    Attributes
+    ----------
+    n_head : int
+        The number of attention heads.
+    n_embd : int
+        The size of the input and output feature vectors.
+    dropout : float
+        The dropout rate to use for regularization.
+    block_size : int
+        The size of the block to use for the attention mask.
+    q_attn : torch.nn.Linear
+        The query projection layer.
+    k_attn : torch.nn.Linear
+        The key projection layer.
+    v_attn : torch.nn.Linear
+        The value projection layer.
+    c_proj : torch.nn.Linear
+        The output projection layer.
+    attn_dropout : torch.nn.Dropout
+        The dropout layer for the attention mechanism.
+    resid_dropout : torch.nn.Dropout
+        The dropout layer for the output.
+    bias : torch.Tensor
+        The attention mask to ensure causal attention.
+
+    Methods
+    -------
+    scaled_dot_product_attention(q, k, v, mask: bool = None):
+        Computes the scaled dot product attention.
+    forward(q_x, k_x, v_x, mask = None, is_masked = False):
+        Computes the forward pass of the multi-head attention.
+
+    Parameters
+    ----------
+    config : object
+        A configuration object with the following attributes:
+            n_head (int): The number of attention heads.
+            n_embd (int): The size of the input and output feature vectors.
+            bias (bool): If True, the linear layers will include a bias term.
+            dropout (float): The dropout rate to use for regularization.
+            block_size (int): The size of the block to use for the attention mask.
     """
+
     def __init__(self, config):
         """
-        Constructor for the MultiHeadAttention class.
-        
-        Args:
-            - config: The configuration object containing model parameters.
+        Initializes the multi-head attention network with the given configuration.
+
+        Parameters
+        ----------
+        config : object
+            A configuration object with the following attributes:
+                n_head (int): The number of attention heads.
+                n_embd (int): The size of the input and output feature vectors.
+                bias (bool): If True, the linear layers will include a bias term.
+                dropout (float): The dropout rate to use for regularization.
+                block_size (int): The size of the block to use for the attention mask.
         """
         super().__init__()
         assert config.n_embd % config.n_head == 0
@@ -60,16 +99,22 @@ class MultiHeadAttention(nn.Module):
     def scaled_dot_product_attention(self, q, k, v, mask: bool = None):
         """
         Computes the scaled dot product attention.
-        
-        Args:
-            - q (Tensor): Query tensor of shape (batch_size, num_heads, seq_length, emb_dim).
-            - k (Tensor): Key tensor of shape (batch_size, num_heads, seq_length, emb_dim).
-            - v (Tensor): Value tensor of shape (batch_size, num_heads, seq_length, emb_dim).
-            - mask (bool, optional): Flag indicating whether to apply mask on the attention scores.
 
-        Returns:
-            - y (Tensor): Output tensor after applying attention.
-            - attn_weights (list): Attention weights usefull to visualized how attention work
+        Parameters
+        ----------
+        q : torch.Tensor
+            The query tensor.
+        k : torch.Tensor
+            The key tensor.
+        v : torch.Tensor
+            The value tensor.
+        mask : bool, optional
+            The attention mask. If None, no mask is applied. Default is None.
+
+        Returns
+        -------
+        tuple
+            The output tensor and the attention weights.
         """
         # manual implementation of attention
         att = (q @ k.transpose(-2, -1)) * (1.0 / math.sqrt(k.size(-1))) # Step 1 & 2: (MatMul) and (Scale)
@@ -88,18 +133,25 @@ class MultiHeadAttention(nn.Module):
 
     def forward(self, q_x, k_x, v_x, mask = None, is_masked = False):
         """
-        Forward pass for the MultiHeadAttention module.
-        
-        Args:
-            - q_x (Tensor): Input query tensor of shape (batch_size, seq_length, emb_dim).
-            - k_x (Tensor): Input key tensor of shape (batch_size, seq_length, emb_dim).
-            - v_x (Tensor): Input value tensor of shape (batch_size, seq_length, emb_dim).
-            - mask (torch.Tensor, optional): The mask tensor to ignore padding, size (B, 1, 1, T).
-            - is_masked (bool, optional): Flag indicating whether to apply mask on the attention scores.
+        Implements the forward pass of the multi-head attention.
 
-        Returns:
-            - y (Tensor): Output tensor after applying multi-head attention.
-            - attn_weights (list): Attention weights usefull to visualized how attention work
+        Parameters
+        ----------
+        q_x : torch.Tensor
+            The input query tensor.
+        k_x : torch.Tensor
+            The input key tensor.
+        v_x : torch.Tensor
+            The input value tensor.
+        mask : bool, optional
+            The attention mask. If None, no mask is applied. Default is None.
+        is_masked : bool, optional
+            Define if this MHA is a Masked MHA. Do we have to add or not a triangular mask ?
+
+        Returns
+        -------
+        tuple
+            The output tensor and the attention weights.
         """
         B_q, T_q, C_q = q_x.size() # batch size, sequence length, embedding dimensionality (n_embd)
         B_kv, T_kv, C_kv = k_x.size() # batch size, sequence length, embedding dimensionality (n_embd)

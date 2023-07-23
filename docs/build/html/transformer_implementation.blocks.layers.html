@@ -46,35 +46,63 @@
 <p>The class implementing a position-wise FFNN.
 The FFNN consists of two linear transformations with a GELU activation in between, 
 followed by a dropout for regularization.</p>
+<section id="attributes">
+<h3>Attributes<a class="headerlink" href="#attributes" title="Permalink to this heading">¶</a></h3>
 <dl class="simple">
-<dt>Attributes:</dt><dd><ul class="simple">
-<li><p>c_fc (nn.Linear): First fully connected layer.</p></li>
-<li><p>gelu (nn.GELU): GELU activation function layer.</p></li>
-<li><p>c_proj (nn.Linear): Second fully connected layer.</p></li>
-<li><p>dropout (nn.Dropout): Dropout layer for regularization.</p></li>
-</ul>
+<dt>c_fc<span class="classifier">torch.nn.Linear</span></dt><dd><p>The first fully connected layer of the feed-forward network. It takes
+as input a tensor with n_embd features and returns a tensor with 
+4 * n_embd features.</p>
 </dd>
-<dt>Args:</dt><dd><ul class="simple">
-<li><p>config (Config): A configuration object with attribute <cite>n_embd</cite>, <cite>bias</cite>, and <cite>dropout</cite>.</p></li>
-</ul>
+<dt>gelu<span class="classifier">torch.nn.GELU</span></dt><dd><p>The Gaussian Error Linear Unit activation function.</p>
+</dd>
+<dt>c_proj<span class="classifier">torch.nn.Linear</span></dt><dd><p>The second fully connected layer of the feed-forward network. It takes
+as input a tensor with 4 * n_embd features and returns a tensor with 
+n_embd features.</p>
+</dd>
+<dt>dropout<span class="classifier">torch.nn.Dropout</span></dt><dd><p>The dropout layer for regularization. The dropout rate is specified in
+the configuration.</p>
+</dd>
+</dl>
+</section>
+<section id="methods">
+<h3>Methods<a class="headerlink" href="#methods" title="Permalink to this heading">¶</a></h3>
+<dl class="simple">
+<dt>forward(x: torch.Tensor) -&gt; torch.Tensor:</dt><dd><p>Computes the forward pass of the network.</p>
+</dd>
+</dl>
+</section>
+<section id="parameters">
+<h3>Parameters<a class="headerlink" href="#parameters" title="Permalink to this heading">¶</a></h3>
+<dl class="simple">
+<dt>config<span class="classifier">object</span></dt><dd><dl class="simple">
+<dt>A configuration object with the following attribute:</dt><dd><p>n_embd (int): The size of the input and output feature vectors.
+bias (bool): If True, the linear layers will include a bias term.
+dropout (float): The dropout rate to use for regularization.</p>
+</dd>
+</dl>
 </dd>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="transformer_implementation.blocks.layers.FeedForward.FeedForward.forward">
 <span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#transformer_implementation.blocks.layers.FeedForward.FeedForward.forward" title="Permalink to this definition">¶</a></dt>
-<dd><p>Define the computation performed at every call.</p>
+<dd><p>Implements the forward pass of the feed-forward network.</p>
+<section id="id1">
+<h4>Parameters<a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h4>
 <dl class="simple">
-<dt>Args:</dt><dd><ul class="simple">
-<li><p>x (torch.Tensor): The input tensor to the forward pass.</p></li>
-</ul>
-</dd>
-<dt>Returns:</dt><dd><ul class="simple">
-<li><p>torch.Tensor: The output of the FFNN.</p></li>
-</ul>
+<dt>x<span class="classifier">torch.Tensor</span></dt><dd><p>The input tensor with a size of n_embd.</p>
 </dd>
 </dl>
+</section>
+<section id="returns">
+<h4>Returns<a class="headerlink" href="#returns" title="Permalink to this heading">¶</a></h4>
+<dl class="simple">
+<dt>torch.Tensor</dt><dd><p>The output tensor, post-processed by the feed-forward network.</p>
+</dd>
+</dl>
+</section>
 </dd></dl>
 
+</section>
 </dd></dl>
 
 </section>
@@ -87,29 +115,53 @@ followed by a dropout for regularization.</p>
 <p>A Layer Normalization module with optional bias.</p>
 <p>This implementation of Layer Normalization allows turning off the bias term,
 which is not directly supported by PyTorch’s layer normalization function.</p>
-<dl>
-<dt>Attributes:</dt><dd><p>weight: Learnable weights for the layer normalization. Initialized as an all ones tensor.
-bias: Learnable biases for the layer normalization. Initialized as an all zeros tensor</p>
-<blockquote>
-<div><p>if bias argument in constructor is True, otherwise it’s set to None.</p>
-</div></blockquote>
+<section id="id2">
+<h3>Attributes<a class="headerlink" href="#id2" title="Permalink to this heading">¶</a></h3>
+<dl class="simple">
+<dt>weight<span class="classifier">torch.nn.Parameter</span></dt><dd><p>A learnable scale factor initialized to one. This has the same shape as 
+the input feature dimension.</p>
 </dd>
-<dt>Args:</dt><dd><p>ndim: An integer for the dimension of the input vectors.
-bias: A boolean which, if True, adds a learnable bias to the output.</p>
+<dt>bias<span class="classifier">torch.nn.Parameter</span></dt><dd><p>A learnable bias term initialized to zero if bias is True, else None. This 
+has the same shape as the input feature dimension.</p>
+</dd>
+</dl>
+</section>
+<section id="id3">
+<h3>Methods<a class="headerlink" href="#id3" title="Permalink to this heading">¶</a></h3>
+<dl class="simple">
+<dt>forward(input: torch.Tensor) -&gt; torch.Tensor:</dt><dd><p>Applies layer normalization to the input tensor.</p>
+</dd>
+</dl>
+</section>
+<section id="id4">
+<h3>Parameters<a class="headerlink" href="#id4" title="Permalink to this heading">¶</a></h3>
+<dl class="simple">
+<dt>ndim<span class="classifier">int</span></dt><dd><p>The feature dimension size of the input tensor.</p>
+</dd>
+<dt>bias<span class="classifier">bool</span></dt><dd><p>If True, adds a learnable bias to the output.</p>
 </dd>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="transformer_implementation.blocks.layers.LayerNorm.LayerNorm.forward">
 <span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#transformer_implementation.blocks.layers.LayerNorm.LayerNorm.forward" title="Permalink to this definition">¶</a></dt>
-<dd><p>Defines the computation performed at every call.</p>
+<dd><p>Implements the forward pass of the LayerNorm module.</p>
+<section id="id5">
+<h4>Parameters<a class="headerlink" href="#id5" title="Permalink to this heading">¶</a></h4>
 <dl class="simple">
-<dt>Args:</dt><dd><p>input (tensor): The input tensor to be normalized.</p>
-</dd>
-<dt>Returns:</dt><dd><p>tensor: The normalized input tensor.</p>
+<dt>input<span class="classifier">torch.Tensor</span></dt><dd><p>The input tensor that will be normalized.</p>
 </dd>
 </dl>
+</section>
+<section id="id6">
+<h4>Returns<a class="headerlink" href="#id6" title="Permalink to this heading">¶</a></h4>
+<dl class="simple">
+<dt>torch.Tensor</dt><dd><p>The normalized output tensor.</p>
+</dd>
+</dl>
+</section>
 </dd></dl>
 
+</section>
 </dd></dl>
 
 </section>
@@ -119,63 +171,113 @@ bias: A boolean which, if True, adds a learnable bias to the output.</p>
 <dt class="sig sig-object py" id="transformer_implementation.blocks.layers.MultiHeadAttention.MultiHeadAttention">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">transformer_implementation.blocks.layers.MultiHeadAttention.</span></span><span class="sig-name descname"><span class="pre">MultiHeadAttention</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#transformer_implementation.blocks.layers.MultiHeadAttention.MultiHeadAttention" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
-<p>Multi-Head Attention module.</p>
-<p>This module applies multi-head attention mechanism on the input sequence. This implementation doesn’t apply mask over the attention scores.</p>
+<p>Implements a multi-head attention module in PyTorch.</p>
+<p>This class is a child of the PyTorch nn.Module class. It uses scaled dot 
+product attention mechanism and includes dropout for regularization.</p>
+<section id="id7">
+<h3>Attributes<a class="headerlink" href="#id7" title="Permalink to this heading">¶</a></h3>
 <dl class="simple">
-<dt>Attributes:</dt><dd><ul class="simple">
-<li><p>n_head (int): Number of attention heads.</p></li>
-<li><p>n_embd (int): Embedding dimensionality.</p></li>
-<li><p>dropout (float): Dropout rate.</p></li>
-<li><p>q_attn (nn.Linear): Linear layer for the query projection.</p></li>
-<li><p>k_attn (nn.Linear): Linear layer for the key projection.</p></li>
-<li><p>v_attn (nn.Linear): Linear layer for the value projection.</p></li>
-<li><p>c_proj (nn.Linear): Linear layer for the output projection.</p></li>
-<li><p>attn_dropout (nn.Dropout): Dropout layer for the attention scores.</p></li>
-<li><p>resid_dropout (nn.Dropout): Dropout layer for the residual connection.</p></li>
-<li><p>flash (bool): Flag indicating if flash attention is available.</p></li>
-</ul>
+<dt>n_head<span class="classifier">int</span></dt><dd><p>The number of attention heads.</p>
+</dd>
+<dt>n_embd<span class="classifier">int</span></dt><dd><p>The size of the input and output feature vectors.</p>
+</dd>
+<dt>dropout<span class="classifier">float</span></dt><dd><p>The dropout rate to use for regularization.</p>
+</dd>
+<dt>block_size<span class="classifier">int</span></dt><dd><p>The size of the block to use for the attention mask.</p>
+</dd>
+<dt>q_attn<span class="classifier">torch.nn.Linear</span></dt><dd><p>The query projection layer.</p>
+</dd>
+<dt>k_attn<span class="classifier">torch.nn.Linear</span></dt><dd><p>The key projection layer.</p>
+</dd>
+<dt>v_attn<span class="classifier">torch.nn.Linear</span></dt><dd><p>The value projection layer.</p>
+</dd>
+<dt>c_proj<span class="classifier">torch.nn.Linear</span></dt><dd><p>The output projection layer.</p>
+</dd>
+<dt>attn_dropout<span class="classifier">torch.nn.Dropout</span></dt><dd><p>The dropout layer for the attention mechanism.</p>
+</dd>
+<dt>resid_dropout<span class="classifier">torch.nn.Dropout</span></dt><dd><p>The dropout layer for the output.</p>
+</dd>
+<dt>bias<span class="classifier">torch.Tensor</span></dt><dd><p>The attention mask to ensure causal attention.</p>
+</dd>
+</dl>
+</section>
+<section id="id8">
+<h3>Methods<a class="headerlink" href="#id8" title="Permalink to this heading">¶</a></h3>
+<dl class="simple">
+<dt>scaled_dot_product_attention(q, k, v, mask: bool = None):</dt><dd><p>Computes the scaled dot product attention.</p>
+</dd>
+<dt>forward(q_x, k_x, v_x, mask = None, is_masked = False):</dt><dd><p>Computes the forward pass of the multi-head attention.</p>
+</dd>
+</dl>
+</section>
+<section id="id9">
+<h3>Parameters<a class="headerlink" href="#id9" title="Permalink to this heading">¶</a></h3>
+<dl class="simple">
+<dt>config<span class="classifier">object</span></dt><dd><dl class="simple">
+<dt>A configuration object with the following attributes:</dt><dd><p>n_head (int): The number of attention heads.
+n_embd (int): The size of the input and output feature vectors.
+bias (bool): If True, the linear layers will include a bias term.
+dropout (float): The dropout rate to use for regularization.
+block_size (int): The size of the block to use for the attention mask.</p>
+</dd>
+</dl>
 </dd>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="transformer_implementation.blocks.layers.MultiHeadAttention.MultiHeadAttention.forward">
-<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">q_x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k_x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v_x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#transformer_implementation.blocks.layers.MultiHeadAttention.MultiHeadAttention.forward" title="Permalink to this definition">¶</a></dt>
-<dd><p>Forward pass for the MultiHeadAttention module.</p>
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">q_x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k_x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v_x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_masked</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#transformer_implementation.blocks.layers.MultiHeadAttention.MultiHeadAttention.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implements the forward pass of the multi-head attention.</p>
+<section id="id10">
+<h4>Parameters<a class="headerlink" href="#id10" title="Permalink to this heading">¶</a></h4>
 <dl class="simple">
-<dt>Args:</dt><dd><ul class="simple">
-<li><p>q_x (Tensor): Input query tensor of shape (batch_size, seq_length, emb_dim).</p></li>
-<li><p>k_x (Tensor): Input key tensor of shape (batch_size, seq_length, emb_dim).</p></li>
-<li><p>v_x (Tensor): Input value tensor of shape (batch_size, seq_length, emb_dim).</p></li>
-<li><p>mask (bool, optional): Flag indicating whether to apply mask on the attention scores.</p></li>
-</ul>
+<dt>q_x<span class="classifier">torch.Tensor</span></dt><dd><p>The input query tensor.</p>
 </dd>
-<dt>Returns:</dt><dd><ul class="simple">
-<li><p>y (Tensor): Output tensor after applying multi-head attention.</p></li>
-<li><p>attn_weights (list): Attention weights usefull to visualized how attention work</p></li>
-</ul>
+<dt>k_x<span class="classifier">torch.Tensor</span></dt><dd><p>The input key tensor.</p>
+</dd>
+<dt>v_x<span class="classifier">torch.Tensor</span></dt><dd><p>The input value tensor.</p>
+</dd>
+<dt>mask<span class="classifier">bool, optional</span></dt><dd><p>The attention mask. If None, no mask is applied. Default is None.</p>
+</dd>
+<dt>is_masked<span class="classifier">bool, optional</span></dt><dd><p>Define if this MHA is a Masked MHA. Do we have to add or not a triangular mask ?</p>
 </dd>
 </dl>
+</section>
+<section id="id11">
+<h4>Returns<a class="headerlink" href="#id11" title="Permalink to this heading">¶</a></h4>
+<dl class="simple">
+<dt>tuple</dt><dd><p>The output tensor and the attention weights.</p>
+</dd>
+</dl>
+</section>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="transformer_implementation.blocks.layers.MultiHeadAttention.MultiHeadAttention.scaled_dot_product_attention">
 <span class="sig-name descname"><span class="pre">scaled_dot_product_attention</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">q</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">v</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#transformer_implementation.blocks.layers.MultiHeadAttention.MultiHeadAttention.scaled_dot_product_attention" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes the scaled dot product attention.</p>
+<section id="id12">
+<h4>Parameters<a class="headerlink" href="#id12" title="Permalink to this heading">¶</a></h4>
 <dl class="simple">
-<dt>Args:</dt><dd><ul class="simple">
-<li><p>q (Tensor): Query tensor of shape (batch_size, num_heads, seq_length, emb_dim).</p></li>
-<li><p>k (Tensor): Key tensor of shape (batch_size, num_heads, seq_length, emb_dim).</p></li>
-<li><p>v (Tensor): Value tensor of shape (batch_size, num_heads, seq_length, emb_dim).</p></li>
-<li><p>mask (bool, optional): Flag indicating whether to apply mask on the attention scores.</p></li>
-</ul>
+<dt>q<span class="classifier">torch.Tensor</span></dt><dd><p>The query tensor.</p>
 </dd>
-<dt>Returns:</dt><dd><ul class="simple">
-<li><p>y (Tensor): Output tensor after applying attention.</p></li>
-<li><p>attn_weights (list): Attention weights usefull to visualized how attention work</p></li>
-</ul>
+<dt>k<span class="classifier">torch.Tensor</span></dt><dd><p>The key tensor.</p>
+</dd>
+<dt>v<span class="classifier">torch.Tensor</span></dt><dd><p>The value tensor.</p>
+</dd>
+<dt>mask<span class="classifier">bool, optional</span></dt><dd><p>The attention mask. If None, no mask is applied. Default is None.</p>
 </dd>
 </dl>
+</section>
+<section id="id13">
+<h4>Returns<a class="headerlink" href="#id13" title="Permalink to this heading">¶</a></h4>
+<dl class="simple">
+<dt>tuple</dt><dd><p>The output tensor and the attention weights.</p>
+</dd>
+</dl>
+</section>
 </dd></dl>
 
+</section>
 </dd></dl>
 
 </section>

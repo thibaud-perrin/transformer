@@ -7,24 +7,49 @@ from . import LayerNorm, DecoderBlock
 
 class Decoder(nn.Module):
     """
-    This class implements the decoder part of the Transformer model.
+    Implements a decoder module in PyTorch.
 
-    The Decoder consists of several DecoderBlocks arranged in sequence. The input first goes through an embedding 
-    layer followed by a positional encoding layer. The output of this is then passed through each DecoderBlock in 
-    sequence.
-
-    Attributes:
-        - decoder (nn.ModuleDict): A dictionary of modules making up the transformer decoder.
-        - lm_head (nn.Linear): The final linear layer mapping from the embedding dimension to the vocabulary size.
-        - config (:obj:`Config`): The configuration object for the transformer model.
-
-    .. note:: The weight of the embedding layer and the linear layer are shared.
-
-    Args:
-        - config (:obj:`Config`): The configuration object with attributes such as `vocab_size`, `block_size`, `n_embd`, `dropout`, `n_layer`, and `bias`.
+    This class is a child of the PyTorch nn.Module class. The decoder uses 
+    embeddings for both the vocabulary and the positions. The core of the 
+    decoder is a sequence of DecoderBlock modules. The output of the decoder 
+    is then processed by a linear layer to produce the final output.
+    
+    Attributes
+    ----------
+    config : object
+        A configuration object with the necessary attributes for the decoder.
+    decoder : torch.nn.ModuleDict
+        A dictionary containing the decoder components, including the 
+        embeddings, dropout, DecoderBlock sequence, and LayerNorm.
+    lm_head : torch.nn.Linear
+        A linear layer for producing the final output of the decoder.
+    
+    Methods
+    -------
+    get_num_params(non_embedding: bool = True) -> int:
+        Returns the number of parameters in the decoder.
+    _init_weights(module):
+        Initializes the weights of the specified module.
+    forward(idx, enc_output=None, src_mask=None, tgt_mask=None):
+        Computes the forward pass of the decoder.
+    
+    Parameters
+    ----------
+    config : object
+        A configuration object with necessary attributes, including 
+        vocab_size, n_embd, block_size, dropout, n_layer, and bias.
     """
 
     def __init__(self, config):
+        """
+        Initializes the decoder with the given configuration.
+        
+        Parameters
+        ----------
+        config : object
+            A configuration object with necessary attributes, including 
+            vocab_size, n_embd, block_size, dropout, n_layer, and bias.
+        """
         super().__init__()
         assert config.vocab_size is not None
         assert config.block_size is not None
@@ -60,12 +85,17 @@ class Decoder(nn.Module):
         For non-embedding count (default), the position embeddings get subtracted.
         The token embeddings would too, except due to the parameter sharing these
         params are actually used as weights in the final layer, so we include them.
-
-        Args:
-            - non_embedding (bool): If True, excludes the position embeddings count from the total. Default is True.
-
-        Returns:
-            - int: The number of parameters in the model.
+        
+        Parameters
+        ----------
+        non_embedding : bool, optional
+            If True, does not count the parameters of the position embedding
+            layer. Default is True.
+        
+        Returns
+        -------
+        int
+            The number of parameters in the decoder.
         """
         n_params = sum(p.numel() for p in self.parameters())
         if non_embedding:
@@ -75,9 +105,11 @@ class Decoder(nn.Module):
     def _init_weights(self, module):
         """
         Initializes the weights of the model.
-
-        Args:
-            - module (torch.nn.Module): The module of the model to be initialized.
+        
+        Parameters
+        ----------
+        module : torch.nn.Module
+            The module whose weights will be initialized.
         """
         if isinstance(module, nn.Linear):
             # init Linear layers with normal distribution (Gaussian initialization)
@@ -91,18 +123,24 @@ class Decoder(nn.Module):
 
     def forward(self, idx, enc_output=None, src_mask=None, tgt_mask=None):
         """
-        Defines the computation performed at every call.
-
-        Args:
-            - idx (torch.Tensor): The input tensor to the forward pass.
-            - enc_output (torch.Tensor): The output tensor from the encoder.
-            - src_mask (torch.Tensor, optional): The mask tensor to ignore padding, size (B, 1, 1, T).
-            - tgt_mask (torch.Tensor, optional): The mask tensor to ignore padding, size (B, 1, 1, T).
-
-        Returns:
-            - torch.Tensor: The output tensor (logits) of the model.
-            - list: all layers of decoder attentions weights.
-            - list: all layers cross attentions weights.
+        Computes the forward pass of the decoder.
+        
+        Parameters
+        ----------
+        idx : torch.Tensor
+            The input tensor with token indices.
+        enc_output : torch.Tensor, optional
+            The output of the encoder. Default is None.
+        src_mask : torch.Tensor, optional
+            The mask for the source sequence. Default is None.
+        tgt_mask : torch.Tensor, optional
+            The mask for the target sequence. Default is None.
+        
+        Returns
+        -------
+        Tuple[torch.Tensor, List[torch.Tensor], List[torch.Tensor]]
+            A tuple containing the output tensor, a list of attention scores 
+            from the decoder blocks, and a list of cross-attention scores.
         """
         device = idx.device
         b, t = idx.size()

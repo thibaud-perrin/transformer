@@ -6,22 +6,46 @@ from . import LayerNorm, MultiHeadAttention, FeedForward
 
 class EncoderBlock(nn.Module):
     """
-    A class that implements a single encoder block in the Transformer model.
+    Implements an encoder block of a Transformer model in PyTorch.
     
-    Each block consists of two sub-layers: a multi-head self-attention mechanism,
-    and a position-wise fully connected feed-forward network. There is a residual 
-    connection around each of the two sub-layers, followed by layer normalization.
+    This class is a child of the PyTorch nn.Module class. It consists of 
+    two main components: multi-head attention and feed-forward neural network,
+    each followed by a layer normalization.
 
-    Attributes:
-        - ln_1 (LayerNorm): Layer normalization before the multi-head attention layer.
-        - attn (MultiHeadAttention): Multi-head attention layer.
-        - ln_2 (LayerNorm): Layer normalization before the feed-forward network.
-        - ffw (FeedForward): Position-wise feed-forward network.
-
-    Args:
-        - config (Config): A configuration object with attribute `n_embd` and `bias`.
+    Attributes
+    ----------
+    ln_1 : LayerNorm
+        Layer normalization before the multi-head attention block.
+    attn : MultiHeadAttention
+        Multi-head attention block.
+    ln_2 : LayerNorm
+        Layer normalization before the feed-forward neural network block.
+    ffw : FeedForward
+        Feed-forward neural network block.
+    
+    Methods
+    -------
+    forward(x: torch.Tensor, mask: Optional[torch.Tensor]=None) -> Tuple[torch.Tensor, torch.Tensor]:
+        Computes the forward pass of the encoder block.
+    
+    Parameters
+    ----------
+    config : object
+        A configuration object with the following attribute:
+            n_embd (int): The size of the input and output feature vectors.
+            bias (bool): If True, the layer normalization layers will include a bias term.
     """
     def __init__(self, config):
+        """
+        Initializes the encoder block with the given configuration.
+        
+        Parameters
+        ----------
+        config : object
+            A configuration object with the following attribute:
+                n_embd (int): The size of the input and output feature vectors.
+                bias (bool): If True, the layer normalization layers will include a bias term.
+        """
         super().__init__()
         self.ln_1 = LayerNorm(config.n_embd, bias=config.bias)
         self.attn = MultiHeadAttention(config)
@@ -30,15 +54,25 @@ class EncoderBlock(nn.Module):
 
     def forward(self, x, mask=None) -> torch.Tensor:
         """
-        Defines the computation performed at every call.
+        Implements the forward pass of the encoder block. 
 
-        Args:
-            - x (torch.Tensor): The input tensor to the forward pass.
-            - mask (torch.Tensor, optional): The mask tensor to ignore padding, size (B, 1, 1, T).
-
-        Returns:
-            - torch.Tensor: The output tensor of the block.
-            - decoder_attn: The attention weight of the current block.
+        First, it applies layer normalization and then applies multi-head attention. 
+        The input is then added to the output of the multi-head attention and passed 
+        through another layer normalization. Finally, it applies the feed-forward network 
+        and adds its output to the input of the feed-forward network.
+        
+        Parameters
+        ----------
+        x : torch.Tensor
+            The input tensor with a size of n_embd.
+        mask : Optional[torch.Tensor]
+            An optional mask tensor to be applied on the attention mechanism.
+        
+        Returns
+        -------
+        Tuple[torch.Tensor, torch.Tensor]
+            The output tensor from the encoder block and the attention tensor from 
+            the decoder block.
         """
         # MultiHeadAttention
         x = self.ln_1(x)

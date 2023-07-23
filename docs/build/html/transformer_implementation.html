@@ -77,7 +77,7 @@
 <span id="transformer-implementation-dataloaderfactory-module"></span><h2>transformer_implementation.DataLoaderFactory module<a class="headerlink" href="#module-transformer_implementation.DataLoaderFactory" title="Permalink to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="transformer_implementation.DataLoaderFactory.DataLoaderFactory">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">transformer_implementation.DataLoaderFactory.</span></span><span class="sig-name descname"><span class="pre">DataLoaderFactory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">block_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tokenizer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#transformer_implementation.DataLoaderFactory.DataLoaderFactory" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">transformer_implementation.DataLoaderFactory.</span></span><span class="sig-name descname"><span class="pre">DataLoaderFactory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">block_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tokenizer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">train_dataset_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5000000</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#transformer_implementation.DataLoaderFactory.DataLoaderFactory" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A class to instantiate PyTorch DataLoaders for different splits of a HuggingFace Dataset.</p>
 <dl class="simple">
@@ -93,14 +93,15 @@
 <dt class="sig sig-object py" id="transformer_implementation.DataLoaderFactory.DataLoaderFactory.get_batch">
 <span class="sig-name descname"><span class="pre">get_batch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">split</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#transformer_implementation.DataLoaderFactory.DataLoaderFactory.get_batch" title="Permalink to this definition">¶</a></dt>
 <dd><p>Choose the correct DataLoader and yield batches from it.</p>
-<dl class="simple">
+<dl>
 <dt>Args:</dt><dd><ul class="simple">
 <li><p>split (str): ‘train’, ‘val’ or ‘test’.</p></li>
 </ul>
 </dd>
 <dt>Yields:</dt><dd><ul class="simple">
-<li><p>Dict: a dictionary with keys ‘inputs’, ‘targets’ and ‘translation’, containing a batch of tokenized input, target sequences and original translation.</p></li>
+<li><p>Dict: a dictionary with keys ‘inputs’, ‘targets’ and ‘translation’, containing a batch of tokenized input,</p></li>
 </ul>
+<p>target sequences and original translation.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -129,46 +130,66 @@
 <dt class="sig sig-object py" id="transformer_implementation.Decoder.Decoder">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">transformer_implementation.Decoder.</span></span><span class="sig-name descname"><span class="pre">Decoder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#transformer_implementation.Decoder.Decoder" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
-<p>This class implements the decoder part of the Transformer model.</p>
-<p>The Decoder consists of several DecoderBlocks arranged in sequence. The input first goes through an embedding 
-layer followed by a positional encoding layer. The output of this is then passed through each DecoderBlock in 
-sequence.</p>
+<p>Implements a decoder module in PyTorch.</p>
+<p>This class is a child of the PyTorch nn.Module class. The decoder uses 
+embeddings for both the vocabulary and the positions. The core of the 
+decoder is a sequence of DecoderBlock modules. The output of the decoder 
+is then processed by a linear layer to produce the final output.</p>
+<section id="attributes">
+<h3>Attributes<a class="headerlink" href="#attributes" title="Permalink to this heading">¶</a></h3>
 <dl class="simple">
-<dt>Attributes:</dt><dd><ul class="simple">
-<li><p>decoder (nn.ModuleDict): A dictionary of modules making up the transformer decoder.</p></li>
-<li><p>lm_head (nn.Linear): The final linear layer mapping from the embedding dimension to the vocabulary size.</p></li>
-<li><p>config (<code class="xref py py-obj docutils literal notranslate"><span class="pre">Config</span></code>): The configuration object for the transformer model.</p></li>
-</ul>
+<dt>config<span class="classifier">object</span></dt><dd><p>A configuration object with the necessary attributes for the decoder.</p>
+</dd>
+<dt>decoder<span class="classifier">torch.nn.ModuleDict</span></dt><dd><p>A dictionary containing the decoder components, including the 
+embeddings, dropout, DecoderBlock sequence, and LayerNorm.</p>
+</dd>
+<dt>lm_head<span class="classifier">torch.nn.Linear</span></dt><dd><p>A linear layer for producing the final output of the decoder.</p>
 </dd>
 </dl>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>The weight of the embedding layer and the linear layer are shared.</p>
-</div>
+</section>
+<section id="methods">
+<h3>Methods<a class="headerlink" href="#methods" title="Permalink to this heading">¶</a></h3>
 <dl class="simple">
-<dt>Args:</dt><dd><ul class="simple">
-<li><p>config (<code class="xref py py-obj docutils literal notranslate"><span class="pre">Config</span></code>): The configuration object with attributes such as <cite>vocab_size</cite>, <cite>block_size</cite>, <cite>n_embd</cite>, <cite>dropout</cite>, <cite>n_layer</cite>, and <cite>bias</cite>.</p></li>
-</ul>
+<dt>get_num_params(non_embedding: bool = True) -&gt; int:</dt><dd><p>Returns the number of parameters in the decoder.</p>
+</dd>
+<dt>_init_weights(module):</dt><dd><p>Initializes the weights of the specified module.</p>
+</dd>
+<dt>forward(idx, enc_output=None, src_mask=None, tgt_mask=None):</dt><dd><p>Computes the forward pass of the decoder.</p>
+</dd>
+</dl>
+</section>
+<section id="parameters">
+<h3>Parameters<a class="headerlink" href="#parameters" title="Permalink to this heading">¶</a></h3>
+<dl class="simple">
+<dt>config<span class="classifier">object</span></dt><dd><p>A configuration object with necessary attributes, including 
+vocab_size, n_embd, block_size, dropout, n_layer, and bias.</p>
 </dd>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="transformer_implementation.Decoder.Decoder.forward">
-<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enc_output</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#transformer_implementation.Decoder.Decoder.forward" title="Permalink to this definition">¶</a></dt>
-<dd><p>Defines the computation performed at every call.</p>
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enc_output</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">src_mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tgt_mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#transformer_implementation.Decoder.Decoder.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the forward pass of the decoder.</p>
+<section id="id1">
+<h4>Parameters<a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h4>
 <dl class="simple">
-<dt>Args:</dt><dd><ul class="simple">
-<li><p>idx (torch.Tensor): The input tensor to the forward pass.</p></li>
-<li><p>enc_output (torch.Tensor): The output tensor from the encoder.</p></li>
-<li><p>targets (torch.Tensor, optional): The target tensor against which the loss will be calculated.</p></li>
-</ul>
+<dt>idx<span class="classifier">torch.Tensor</span></dt><dd><p>The input tensor with token indices.</p>
 </dd>
-<dt>Returns:</dt><dd><ul class="simple">
-<li><p>torch.Tensor: The output tensor (logits) of the model.</p></li>
-<li><p>list: all layers of decoder attentions weights.</p></li>
-<li><p>list: all layers cross attentions weights.</p></li>
-</ul>
+<dt>enc_output<span class="classifier">torch.Tensor, optional</span></dt><dd><p>The output of the encoder. Default is None.</p>
+</dd>
+<dt>src_mask<span class="classifier">torch.Tensor, optional</span></dt><dd><p>The mask for the source sequence. Default is None.</p>
+</dd>
+<dt>tgt_mask<span class="classifier">torch.Tensor, optional</span></dt><dd><p>The mask for the target sequence. Default is None.</p>
 </dd>
 </dl>
+</section>
+<section id="returns">
+<h4>Returns<a class="headerlink" href="#returns" title="Permalink to this heading">¶</a></h4>
+<dl class="simple">
+<dt>Tuple[torch.Tensor, List[torch.Tensor], List[torch.Tensor]]</dt><dd><p>A tuple containing the output tensor, a list of attention scores 
+from the decoder blocks, and a list of cross-attention scores.</p>
+</dd>
+</dl>
+</section>
 </dd></dl>
 
 <dl class="py method">
@@ -178,18 +199,24 @@ sequence.</p>
 For non-embedding count (default), the position embeddings get subtracted.
 The token embeddings would too, except due to the parameter sharing these
 params are actually used as weights in the final layer, so we include them.</p>
+<section id="id2">
+<h4>Parameters<a class="headerlink" href="#id2" title="Permalink to this heading">¶</a></h4>
 <dl class="simple">
-<dt>Args:</dt><dd><ul class="simple">
-<li><p>non_embedding (bool): If True, excludes the position embeddings count from the total. Default is True.</p></li>
-</ul>
-</dd>
-<dt>Returns:</dt><dd><ul class="simple">
-<li><p>int: The number of parameters in the model.</p></li>
-</ul>
+<dt>non_embedding<span class="classifier">bool, optional</span></dt><dd><p>If True, does not count the parameters of the position embedding
+layer. Default is True.</p>
 </dd>
 </dl>
+</section>
+<section id="id3">
+<h4>Returns<a class="headerlink" href="#id3" title="Permalink to this heading">¶</a></h4>
+<dl class="simple">
+<dt>int</dt><dd><p>The number of parameters in the decoder.</p>
+</dd>
+</dl>
+</section>
 </dd></dl>
 
+</section>
 </dd></dl>
 
 </section>
@@ -199,36 +226,80 @@ params are actually used as weights in the final layer, so we include them.</p>
 <dt class="sig sig-object py" id="transformer_implementation.Encoder.Encoder">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">transformer_implementation.Encoder.</span></span><span class="sig-name descname"><span class="pre">Encoder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#transformer_implementation.Encoder.Encoder" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
-<p>A class that implements the encoder part of the Transformer model.</p>
-<p>The encoder consists of several EncoderBlocks arranged in sequence.
-The input first goes through an embedding layer followed by a positional encoding layer.
-The output of this is then passed through each EncoderBlock in sequence.</p>
+<p>The Encoder class implements a multi-layer transformer encoder.</p>
+<p>This class inherits from the PyTorch nn.Module class and includes 
+token and position embeddings, dropout, multiple encoder blocks, and
+layer normalization.</p>
+<section id="id4">
+<h3>Attributes<a class="headerlink" href="#id4" title="Permalink to this heading">¶</a></h3>
 <dl class="simple">
-<dt>Attributes:</dt><dd><ul class="simple">
-<li><p>encoder (nn.ModuleDict): A dictionary of modules making up the transformer encoder.</p></li>
-</ul>
+<dt>config<span class="classifier">object</span></dt><dd><dl class="simple">
+<dt>A configuration object with the following attributes:</dt><dd><p>vocab_size (int): The size of the vocabulary.
+block_size (int): The maximum sequence length.
+n_embd (int): The dimension of the embeddings.
+dropout (float): The dropout rate.
+n_layer (int): The number of transformer layers.
+bias (bool): If True, the linear layers will include a bias term.</p>
 </dd>
-<dt>Args:</dt><dd><ul class="simple">
-<li><p>config (Config): A configuration object with attributes such as <cite>vocab_size</cite>, <cite>block_size</cite>, <cite>n_embd</cite>, <cite>dropout</cite>, <cite>n_layer</cite>, and <cite>bias</cite>.</p></li>
-</ul>
+</dl>
+</dd>
+<dt>encoder<span class="classifier">torch.nn.ModuleDict</span></dt><dd><dl class="simple">
+<dt>A dictionary-like module of several layers:</dt><dd><p>wte (torch.nn.Embedding): The token embeddings layer.
+wpe (torch.nn.Embedding): The position embeddings layer.
+drop (torch.nn.Dropout): The dropout layer.
+h (torch.nn.ModuleList): The list of transformer layers.
+ln_f (LayerNorm): The final layer normalization.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</section>
+<section id="id5">
+<h3>Methods<a class="headerlink" href="#id5" title="Permalink to this heading">¶</a></h3>
+<dl class="simple">
+<dt>get_num_params(non_embedding: bool = True) -&gt; int:</dt><dd><p>Returns the total number of parameters.</p>
+</dd>
+<dt>_init_weights(module):</dt><dd><p>Initializes the weights of the specified module.</p>
+</dd>
+<dt>forward(idx, mask=None):</dt><dd><p>Computes the forward pass of the encoder.</p>
+</dd>
+</dl>
+</section>
+<section id="id6">
+<h3>Parameters<a class="headerlink" href="#id6" title="Permalink to this heading">¶</a></h3>
+<dl class="simple">
+<dt>config<span class="classifier">object</span></dt><dd><dl class="simple">
+<dt>A configuration object with the following attributes:</dt><dd><p>vocab_size (int): The size of the vocabulary.
+block_size (int): The maximum sequence length.
+n_embd (int): The dimension of the embeddings.
+dropout (float): The dropout rate.
+n_layer (int): The number of transformer layers.
+bias (bool): If True, the linear layers will include a bias term.</p>
+</dd>
+</dl>
 </dd>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="transformer_implementation.Encoder.Encoder.forward">
-<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">idx</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#transformer_implementation.Encoder.Encoder.forward" title="Permalink to this definition">¶</a></dt>
-<dd><p>Defines the computation performed at every call.</p>
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#transformer_implementation.Encoder.Encoder.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Implements the forward pass of the encoder.</p>
+<section id="id7">
+<h4>Parameters<a class="headerlink" href="#id7" title="Permalink to this heading">¶</a></h4>
 <dl class="simple">
-<dt>Args:</dt><dd><ul class="simple">
-<li><p>idx (torch.Tensor): The input tensor to the forward pass.</p></li>
-<li><p>targets (torch.Tensor, optional): The target tensor against which the loss will be calculated.</p></li>
-</ul>
+<dt>idx<span class="classifier">torch.Tensor</span></dt><dd><p>The input tensor with indices of tokens in the sequence.</p>
 </dd>
-<dt>Returns:</dt><dd><ul class="simple">
-<li><p>torch.Tensor: The output tensor (logits) of the model.</p></li>
-<li><p>list: all encoder layers attentions weights.</p></li>
-</ul>
+<dt>mask<span class="classifier">torch.Tensor, optional</span></dt><dd><p>The mask tensor. If provided, it should have the same size as idx.</p>
 </dd>
 </dl>
+</section>
+<section id="id8">
+<h4>Returns<a class="headerlink" href="#id8" title="Permalink to this heading">¶</a></h4>
+<dl class="simple">
+<dt>Tuple[torch.Tensor, List[torch.Tensor]]</dt><dd><p>The output tensor after layer normalization and the list of attention
+matrices from each transformer layer.</p>
+</dd>
+</dl>
+</section>
 </dd></dl>
 
 <dl class="py method">
@@ -238,16 +309,23 @@ The output of this is then passed through each EncoderBlock in sequence.</p>
 For non-embedding count (default), the position embeddings get subtracted.
 The token embeddings would too, except due to the parameter sharing these
 params are actually used as weights in the final layer, so we include them.</p>
+<section id="id9">
+<h4>Parameters<a class="headerlink" href="#id9" title="Permalink to this heading">¶</a></h4>
 <dl class="simple">
-<dt>Args:</dt><dd><p>-non_embedding (bool, optional): If True, excludes the position embeddings count from the total (Default is True).</p>
-</dd>
-<dt>Returns:</dt><dd><ul class="simple">
-<li><p>int: The number of parameters in the model.</p></li>
-</ul>
+<dt>non_embedding<span class="classifier">bool, optional</span></dt><dd><p>If True, subtracts the number of embedding parameters from the total.</p>
 </dd>
 </dl>
+</section>
+<section id="id10">
+<h4>Returns<a class="headerlink" href="#id10" title="Permalink to this heading">¶</a></h4>
+<dl class="simple">
+<dt>int</dt><dd><p>The total number of parameters.</p>
+</dd>
+</dl>
+</section>
 </dd></dl>
 
+</section>
 </dd></dl>
 
 </section>
@@ -258,6 +336,11 @@ params are actually used as weights in the final layer, so we include them.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">transformer_implementation.Tokenizer.</span></span><span class="sig-name descname"><span class="pre">Tokenizer</span></span><a class="headerlink" href="#transformer_implementation.Tokenizer.Tokenizer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A tokenizer class for encoding/decoding text sequences.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="transformer_implementation.Tokenizer.Tokenizer.generate_padding_mask">
+<span class="sig-name descname"><span class="pre">generate_padding_mask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">triu</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#transformer_implementation.Tokenizer.Tokenizer.generate_padding_mask" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt class="sig sig-object py" id="transformer_implementation.Tokenizer.Tokenizer.sequence_cleaner">
 <span class="sig-name descname"><span class="pre">sequence_cleaner</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sequence</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#transformer_implementation.Tokenizer.Tokenizer.sequence_cleaner" title="Permalink to this definition">¶</a></dt>
@@ -331,13 +414,20 @@ It is primarily used in tasks that require understanding of context or relations
 </dd>
 </dl>
 <dl class="py method">
+<dt class="sig sig-object py" id="transformer_implementation.Transformer.Transformer.configure_optimizers">
+<span class="sig-name descname"><span class="pre">configure_optimizers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">weight_decay</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">learning_rate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">betas</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#transformer_implementation.Transformer.Transformer.configure_optimizers" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="transformer_implementation.Transformer.Transformer.forward">
-<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">src</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tgt</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#transformer_implementation.Transformer.Transformer.forward" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">src</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tgt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">src_mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tgt_mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#transformer_implementation.Transformer.Transformer.forward" title="Permalink to this definition">¶</a></dt>
 <dd><p>Defines the computation performed at every call.</p>
 <dl class="simple">
 <dt>Args:</dt><dd><ul class="simple">
 <li><p>src (torch.Tensor): The input tensor to the encoder.</p></li>
 <li><p>tgt (torch.Tensor): The input tensor to the decoder.</p></li>
+<li><p>src_mask (torch.Tensor): The input_mask tensor to the encoder, size (B, 1, 1, T).</p></li>
+<li><p>tgt_mask (torch.Tensor): The target_masks tensor to the decoder, size (B, 1, 1, T).</p></li>
 </ul>
 </dd>
 <dt>Returns:</dt><dd><ul class="simple">
@@ -347,6 +437,11 @@ It is primarily used in tasks that require understanding of context or relations
 </dd>
 </dl>
 </dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="transformer_implementation.Transformer.Transformer.generate">
+<span class="sig-name descname"><span class="pre">generate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">src</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">src_mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_new_tokens</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">128</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#transformer_implementation.Transformer.Transformer.generate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="transformer_implementation.Transformer.Transformer.load_model">
@@ -370,19 +465,6 @@ It is primarily used in tasks that require understanding of context or relations
 </dl>
 </dd></dl>
 
-<dl class="py method">
-<dt class="sig sig-object py" id="transformer_implementation.Transformer.Transformer.translate_beam_search">
-<span class="sig-name descname"><span class="pre">translate_beam_search</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">src</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beam_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#transformer_implementation.Transformer.Transformer.translate_beam_search" title="Permalink to this definition">¶</a></dt>
-<dd><p>Generates translations of the source sequences using beam search.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>src (torch.Tensor): The source sequences to translate.
-beam_size (int, optional): The number of beams to use in beam search. Default is 5.</p>
-</dd>
-<dt>Returns:</dt><dd><p>Tuple[torch.Tensor, Dict[str, torch.Tensor]]: The best sequence found by beam search and a dictionary containing the attention weights.</p>
-</dd>
-</dl>
-</dd></dl>
-
 </dd></dl>
 
 </section>
@@ -390,37 +472,74 @@ beam_size (int, optional): The number of beams to use in beam search. Default is
 <span id="transformer-implementation-transformerconfig-module"></span><h2>transformer_implementation.TransformerConfig module<a class="headerlink" href="#module-transformer_implementation.TransformerConfig" title="Permalink to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="transformer_implementation.TransformerConfig.TransformerConfig">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">transformer_implementation.TransformerConfig.</span></span><span class="sig-name descname"><span class="pre">TransformerConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tokenizer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">256</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">12</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_layer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_head</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_embd</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">256</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eval_interval</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">200</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eval_iters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">visualize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#transformer_implementation.TransformerConfig.TransformerConfig" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">transformer_implementation.TransformerConfig.</span></span><span class="sig-name descname"><span class="pre">TransformerConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">vocab_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">BOS_IDX</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">EOS_IDX</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">PAD_IDX</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">-1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">256</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">12</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">train_data_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5000000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grad_accumulation_steps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">40</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_layer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_head</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_embd</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">256</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_epochs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eval_iters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">learning_rate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0006</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.9</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">beta2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.95</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight_decay</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1e-09</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'cuda'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'cuda'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtype</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'float16'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">compile</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">backend</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'nccl'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#transformer_implementation.TransformerConfig.TransformerConfig" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Data class that stores the configuration for a Transformer model.</p>
-<dl class="simple">
-<dt>Attributes:</dt><dd><ul class="simple">
-<li><p>tokenizer: An instance of the Tokenizer class.</p></li>
-<li><p>block_size (int): Number of tokens in each sequence. Defaults to 512.</p></li>
-<li><p>batch_size (int): Number of sequences in each batch. Defaults to 12.</p></li>
-<li><p>vocab_size (int): Total size of the tokenizer vocabulary. It is set to the size of the tokenizer vocabulary.</p></li>
-<li><p>n_layer (int): Number of transformer encoder and decoder blocks (N). Defaults to 1.</p></li>
-<li><p>n_head (int): Number of heads in each attention block. Defaults to 2.</p></li>
-<li><p>n_embd (int): Token embedding size. This is from the original Transformer paper. Defaults to 128.</p></li>
-<li><p>dropout (float): Dropout rate to use in the Transformer model. Defaults to 0.1.</p></li>
-<li><dl class="simple">
-<dt>bias (bool): Indicates whether to use bias in Linears and LayerNorms.</dt><dd><p>If True, bias is used similar to GPT-2.
-If False, it is a bit better and faster. Defaults to False.</p>
-</dd>
-</dl>
-</li>
-<li><p>device (str): The device to run the model on. Defaults to ‘cpu’. ‘cuda’ is used if a GPU is available.</p></li>
-<li><p>learning_rate (float): Learning rate for the model optimization. Defaults to 3e-4.</p></li>
-<li><p>max_iters (int): Number of training steps. Defaults to 20.</p></li>
-<li><p>eval_interval (int): Number of steps between each validation dataset. Defaults to 5.</p></li>
-<li><p>eval_iters (int): Number of validation epochs. Defaults to 20.</p></li>
-<li><p>visualize (bool): Define if we want to get the attention scores.</p></li>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>vocab_size</strong> (<em>int</em><em>, </em><em>optional</em>) – Total size of the tokenizer vocabulary.</p></li>
+<li><p><strong>BOS_IDX</strong> (<em>int</em><em>, </em><em>optional</em>) – Index of the BOS token, defaults to -1</p></li>
+<li><p><strong>EOS_IDX</strong> (<em>int</em><em>, </em><em>optional</em>) – Index of the EOS token, defaults to -1</p></li>
+<li><p><strong>PAD_IDX</strong> (<em>int</em><em>, </em><em>optional</em>) – Index of the PAD token, defaults to -1</p></li>
+<li><p><strong>block_size</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of tokens in each sequence, defaults to 256</p></li>
+<li><p><strong>batch_size</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of sequences in each batch, defaults to 12</p></li>
+<li><p><strong>train_data_size</strong> (<em>int</em><em>, </em><em>optional</em>) – Size of train data, defaults to 5000000</p></li>
+<li><p><strong>grad_accumulation_steps</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of batch accumulates during training, defaults to 2</p></li>
+<li><p><strong>n_layer</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of transformer encoder and decoder blocks (N), defaults to 2</p></li>
+<li><p><strong>n_head</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of heads in each attention block, defaults to 4</p></li>
+<li><p><strong>n_embd</strong> (<em>int</em><em>, </em><em>optional</em>) – Token embedding size, defaults to 256</p></li>
+<li><p><strong>dropout</strong> (<em>float</em><em>, </em><em>optional</em>) – Dropout rate to use in the Transformer model, defaults to 0.1</p></li>
+<li><p><strong>bias</strong> (<em>bool</em><em>, </em><em>optional</em>) – Indicates whether to use bias in Linears and LayerNorms, defaults to False</p></li>
+<li><p><strong>max_epochs</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of training epochs, defaults to 100</p></li>
+<li><p><strong>max_iters</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of training steps, defaults to 2000</p></li>
+<li><p><strong>eval_iters</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of validation epochs, defaults to 20</p></li>
+<li><p><strong>learning_rate</strong> (<em>float</em><em>, </em><em>optional</em>) – Learning rate for the model optimization, defaults to 6e-4</p></li>
+<li><p><strong>beta1</strong> (<em>float</em><em>, </em><em>optional</em>) – Beta1 for the AdamW optimizer, defaults to 0.9</p></li>
+<li><p><strong>beta2</strong> (<em>float</em><em>, </em><em>optional</em>) – Beta2 for the AdamW optimizer, defaults to 0.95</p></li>
+<li><p><strong>weight_decay</strong> (<em>float</em><em>, </em><em>optional</em>) – Weight decay for the AdamW optimizer, defaults to 1e-1</p></li>
+<li><p><strong>eps</strong> (<em>float</em><em>, </em><em>optional</em>) – Epsilon for the AdamW optimizer, defaults to 1e-9</p></li>
+<li><p><strong>device</strong> (<em>str</em><em>, </em><em>optional</em>) – The device to run the model on, defaults to ‘cpu’. ‘cuda’ is used if a GPU is available.</p></li>
+<li><p><strong>dtype</strong> (<em>str</em><em>, </em><em>optional</em>) – The data type for the model, defaults to ‘bfloat16’ if GPU is available and supports ‘bfloat16’, otherwise ‘float16’</p></li>
+<li><p><strong>compile</strong> (<em>bool</em><em>, </em><em>optional</em>) – If set to True, use PyTorch 2.0 to compile the model to be faster, defaults to True</p></li>
+<li><p><strong>backend</strong> (<em>str</em><em>, </em><em>optional</em>) – Backend for DDP settings, defaults to ‘nccl’</p></li>
+<li><p><strong>ddp</strong> (<em>bool</em><em>, </em><em>optional</em>) – If set to True, this is a DDP run, defaults to the evaluation of the environment variable ‘RANK’ != -1</p></li>
 </ul>
 </dd>
 </dl>
 <dl class="py attribute">
+<dt class="sig sig-object py" id="transformer_implementation.TransformerConfig.TransformerConfig.BOS_IDX">
+<span class="sig-name descname"><span class="pre">BOS_IDX</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">-1</span></em><a class="headerlink" href="#transformer_implementation.TransformerConfig.TransformerConfig.BOS_IDX" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="transformer_implementation.TransformerConfig.TransformerConfig.EOS_IDX">
+<span class="sig-name descname"><span class="pre">EOS_IDX</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">-1</span></em><a class="headerlink" href="#transformer_implementation.TransformerConfig.TransformerConfig.EOS_IDX" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="transformer_implementation.TransformerConfig.TransformerConfig.PAD_IDX">
+<span class="sig-name descname"><span class="pre">PAD_IDX</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">-1</span></em><a class="headerlink" href="#transformer_implementation.TransformerConfig.TransformerConfig.PAD_IDX" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="transformer_implementation.TransformerConfig.TransformerConfig.backend">
+<span class="sig-name descname"><span class="pre">backend</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'nccl'</span></em><a class="headerlink" href="#transformer_implementation.TransformerConfig.TransformerConfig.backend" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="transformer_implementation.TransformerConfig.TransformerConfig.batch_size">
 <span class="sig-name descname"><span class="pre">batch_size</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">12</span></em><a class="headerlink" href="#transformer_implementation.TransformerConfig.TransformerConfig.batch_size" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="transformer_implementation.TransformerConfig.TransformerConfig.beta1">
+<span class="sig-name descname"><span class="pre">beta1</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.9</span></em><a class="headerlink" href="#transformer_implementation.TransformerConfig.TransformerConfig.beta1" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="transformer_implementation.TransformerConfig.TransformerConfig.beta2">
+<span class="sig-name descname"><span class="pre">beta2</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.95</span></em><a class="headerlink" href="#transformer_implementation.TransformerConfig.TransformerConfig.beta2" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -434,8 +553,23 @@ If False, it is a bit better and faster. Defaults to False.</p>
 <dd></dd></dl>
 
 <dl class="py attribute">
+<dt class="sig sig-object py" id="transformer_implementation.TransformerConfig.TransformerConfig.compile">
+<span class="sig-name descname"><span class="pre">compile</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">True</span></em><a class="headerlink" href="#transformer_implementation.TransformerConfig.TransformerConfig.compile" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="transformer_implementation.TransformerConfig.TransformerConfig.ddp">
+<span class="sig-name descname"><span class="pre">ddp</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#transformer_implementation.TransformerConfig.TransformerConfig.ddp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="transformer_implementation.TransformerConfig.TransformerConfig.device">
-<span class="sig-name descname"><span class="pre">device</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cpu'</span></em><a class="headerlink" href="#transformer_implementation.TransformerConfig.TransformerConfig.device" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">device</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cuda'</span></em><a class="headerlink" href="#transformer_implementation.TransformerConfig.TransformerConfig.device" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="transformer_implementation.TransformerConfig.TransformerConfig.device_type">
+<span class="sig-name descname"><span class="pre">device_type</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'cuda'</span></em><a class="headerlink" href="#transformer_implementation.TransformerConfig.TransformerConfig.device_type" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -444,8 +578,13 @@ If False, it is a bit better and faster. Defaults to False.</p>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="transformer_implementation.TransformerConfig.TransformerConfig.eval_interval">
-<span class="sig-name descname"><span class="pre">eval_interval</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">200</span></em><a class="headerlink" href="#transformer_implementation.TransformerConfig.TransformerConfig.eval_interval" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="transformer_implementation.TransformerConfig.TransformerConfig.dtype">
+<span class="sig-name descname"><span class="pre">dtype</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">'float16'</span></em><a class="headerlink" href="#transformer_implementation.TransformerConfig.TransformerConfig.dtype" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="transformer_implementation.TransformerConfig.TransformerConfig.eps">
+<span class="sig-name descname"><span class="pre">eps</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">1e-09</span></em><a class="headerlink" href="#transformer_implementation.TransformerConfig.TransformerConfig.eps" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -454,8 +593,18 @@ If False, it is a bit better and faster. Defaults to False.</p>
 <dd></dd></dl>
 
 <dl class="py attribute">
+<dt class="sig sig-object py" id="transformer_implementation.TransformerConfig.TransformerConfig.grad_accumulation_steps">
+<span class="sig-name descname"><span class="pre">grad_accumulation_steps</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">40</span></em><a class="headerlink" href="#transformer_implementation.TransformerConfig.TransformerConfig.grad_accumulation_steps" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
 <dt class="sig sig-object py" id="transformer_implementation.TransformerConfig.TransformerConfig.learning_rate">
-<span class="sig-name descname"><span class="pre">learning_rate</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0003</span></em><a class="headerlink" href="#transformer_implementation.TransformerConfig.TransformerConfig.learning_rate" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">learning_rate</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.0006</span></em><a class="headerlink" href="#transformer_implementation.TransformerConfig.TransformerConfig.learning_rate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="transformer_implementation.TransformerConfig.TransformerConfig.max_epochs">
+<span class="sig-name descname"><span class="pre">max_epochs</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">100</span></em><a class="headerlink" href="#transformer_implementation.TransformerConfig.TransformerConfig.max_epochs" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
@@ -479,24 +628,19 @@ If False, it is a bit better and faster. Defaults to False.</p>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="transformer_implementation.TransformerConfig.TransformerConfig.tokenizer">
-<span class="sig-name descname"><span class="pre">tokenizer</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">any</span></em><a class="headerlink" href="#transformer_implementation.TransformerConfig.TransformerConfig.tokenizer" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="transformer_implementation.TransformerConfig.TransformerConfig.train_data_size">
+<span class="sig-name descname"><span class="pre">train_data_size</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">5000000</span></em><a class="headerlink" href="#transformer_implementation.TransformerConfig.TransformerConfig.train_data_size" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="transformer_implementation.TransformerConfig.TransformerConfig.visualize">
-<span class="sig-name descname"><span class="pre">visualize</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">bool</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">False</span></em><a class="headerlink" href="#transformer_implementation.TransformerConfig.TransformerConfig.visualize" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="transformer_implementation.TransformerConfig.TransformerConfig.vocab_size">
+<span class="sig-name descname"><span class="pre">vocab_size</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0</span></em><a class="headerlink" href="#transformer_implementation.TransformerConfig.TransformerConfig.vocab_size" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="py property">
-<dt class="sig sig-object py" id="transformer_implementation.TransformerConfig.TransformerConfig.vocab_size">
-<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">vocab_size</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#transformer_implementation.TransformerConfig.TransformerConfig.vocab_size" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns the total size of the tokenizer vocabulary.</p>
-<dl class="simple">
-<dt>Returns:</dt><dd><p>int: The size of the tokenizer vocabulary.</p>
-</dd>
-</dl>
-</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="transformer_implementation.TransformerConfig.TransformerConfig.weight_decay">
+<span class="sig-name descname"><span class="pre">weight_decay</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">0.1</span></em><a class="headerlink" href="#transformer_implementation.TransformerConfig.TransformerConfig.weight_decay" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 

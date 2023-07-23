@@ -6,19 +6,65 @@ from . import LayerNorm, EncoderBlock
 
 class Encoder(nn.Module):
     """
-    A class that implements the encoder part of the Transformer model.
+    The Encoder class implements a multi-layer transformer encoder.
 
-    The encoder consists of several EncoderBlocks arranged in sequence.
-    The input first goes through an embedding layer followed by a positional encoding layer.
-    The output of this is then passed through each EncoderBlock in sequence.
+    This class inherits from the PyTorch nn.Module class and includes 
+    token and position embeddings, dropout, multiple encoder blocks, and
+    layer normalization.
 
-    Attributes:
-        - encoder (nn.ModuleDict): A dictionary of modules making up the transformer encoder.
+    Attributes
+    ----------
+    config : object
+        A configuration object with the following attributes:
+            vocab_size (int): The size of the vocabulary.
+            block_size (int): The maximum sequence length.
+            n_embd (int): The dimension of the embeddings.
+            dropout (float): The dropout rate.
+            n_layer (int): The number of transformer layers.
+            bias (bool): If True, the linear layers will include a bias term.
+    encoder : torch.nn.ModuleDict
+        A dictionary-like module of several layers:
+            wte (torch.nn.Embedding): The token embeddings layer.
+            wpe (torch.nn.Embedding): The position embeddings layer.
+            drop (torch.nn.Dropout): The dropout layer.
+            h (torch.nn.ModuleList): The list of transformer layers.
+            ln_f (LayerNorm): The final layer normalization.
 
-    Args:
-        - config (Config): A configuration object with attributes such as `vocab_size`, `block_size`, `n_embd`, `dropout`, `n_layer`, and `bias`.
+    Methods
+    -------
+    get_num_params(non_embedding: bool = True) -> int:
+        Returns the total number of parameters.
+    _init_weights(module):
+        Initializes the weights of the specified module.
+    forward(idx, mask=None):
+        Computes the forward pass of the encoder.
+    
+    Parameters
+    ----------
+    config : object
+        A configuration object with the following attributes:
+            vocab_size (int): The size of the vocabulary.
+            block_size (int): The maximum sequence length.
+            n_embd (int): The dimension of the embeddings.
+            dropout (float): The dropout rate.
+            n_layer (int): The number of transformer layers.
+            bias (bool): If True, the linear layers will include a bias term.
     """
     def __init__(self, config):
+        """
+        Initializes the encoder with the given configuration.
+
+        Parameters
+        ----------
+        config : object
+            A configuration object with the following attributes:
+                vocab_size (int): The size of the vocabulary.
+                block_size (int): The maximum sequence length.
+                n_embd (int): The dimension of the embeddings.
+                dropout (float): The dropout rate.
+                n_layer (int): The number of transformer layers.
+                bias (bool): If True, the linear layers will include a bias term.
+        """
         super().__init__()
         assert config.vocab_size is not None
         assert config.block_size is not None
@@ -53,11 +99,15 @@ class Encoder(nn.Module):
         The token embeddings would too, except due to the parameter sharing these
         params are actually used as weights in the final layer, so we include them.
 
-        Args:
-            -non_embedding (bool, optional): If True, excludes the position embeddings count from the total (Default is True).
+        Parameters
+        ----------
+        non_embedding : bool, optional
+            If True, subtracts the number of embedding parameters from the total.
 
-        Returns:
-            - int: The number of parameters in the model.
+        Returns
+        -------
+        int
+            The total number of parameters.
         """
         n_params = sum(p.numel() for p in self.parameters())
         if non_embedding:
@@ -68,8 +118,10 @@ class Encoder(nn.Module):
         """
         Initializes the weights of the model. Proper weight initialization can help speed up the training process and improve model performance.
 
-        Args:
-            - module (nn.Module): The module of the model to be initialized.
+        Parameters
+        ----------
+        module : torch.nn.Module
+            The module whose weights will be initialized.
         """
         if isinstance(module, nn.Linear):
             # init Linear layers with normal distribution (Gaussian initialization)
@@ -83,15 +135,20 @@ class Encoder(nn.Module):
 
     def forward(self, idx, mask=None):
         """
-        Defines the computation performed at every call.
+        Implements the forward pass of the encoder.
 
-        Args:
-            - idx (torch.Tensor): The input tensor to the forward pass.
-            - mask (torch.Tensor, optional): The mask tensor to ignore padding, size (B, 1, 1, T).
+        Parameters
+        ----------
+        idx : torch.Tensor
+            The input tensor with indices of tokens in the sequence.
+        mask : torch.Tensor, optional
+            The mask tensor. If provided, it should have the same size as idx.
 
-        Returns:
-            - torch.Tensor: The output tensor (logits) of the model.
-            - list: all encoder layers attentions weights.
+        Returns
+        -------
+        Tuple[torch.Tensor, List[torch.Tensor]]
+            The output tensor after layer normalization and the list of attention
+            matrices from each transformer layer.
         """
         device = idx.device
         b, t = idx.size()

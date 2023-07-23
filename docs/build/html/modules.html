@@ -74,6 +74,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="transformer_implementation.html#module-transformer_implementation.Tokenizer">transformer_implementation.Tokenizer module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.Tokenizer.Tokenizer"><code class="docutils literal notranslate"><span class="pre">Tokenizer</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.Tokenizer.Tokenizer.generate_padding_mask"><code class="docutils literal notranslate"><span class="pre">Tokenizer.generate_padding_mask()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.Tokenizer.Tokenizer.sequence_cleaner"><code class="docutils literal notranslate"><span class="pre">Tokenizer.sequence_cleaner()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.Tokenizer.Tokenizer.sequence_padding"><code class="docutils literal notranslate"><span class="pre">Tokenizer.sequence_padding()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.Tokenizer.Tokenizer.tokenize"><code class="docutils literal notranslate"><span class="pre">Tokenizer.tokenize()</span></code></a></li>
@@ -85,31 +86,44 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="transformer_implementation.html#module-transformer_implementation.Transformer">transformer_implementation.Transformer module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.Transformer.Transformer"><code class="docutils literal notranslate"><span class="pre">Transformer</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.Transformer.Transformer.configure_optimizers"><code class="docutils literal notranslate"><span class="pre">Transformer.configure_optimizers()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.Transformer.Transformer.forward"><code class="docutils literal notranslate"><span class="pre">Transformer.forward()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.Transformer.Transformer.generate"><code class="docutils literal notranslate"><span class="pre">Transformer.generate()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.Transformer.Transformer.load_model"><code class="docutils literal notranslate"><span class="pre">Transformer.load_model()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.Transformer.Transformer.save_model"><code class="docutils literal notranslate"><span class="pre">Transformer.save_model()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.Transformer.Transformer.translate_beam_search"><code class="docutils literal notranslate"><span class="pre">Transformer.translate_beam_search()</span></code></a></li>
 </ul>
 </li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="transformer_implementation.html#module-transformer_implementation.TransformerConfig">transformer_implementation.TransformerConfig module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.TransformerConfig.TransformerConfig"><code class="docutils literal notranslate"><span class="pre">TransformerConfig</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.TransformerConfig.TransformerConfig.BOS_IDX"><code class="docutils literal notranslate"><span class="pre">TransformerConfig.BOS_IDX</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.TransformerConfig.TransformerConfig.EOS_IDX"><code class="docutils literal notranslate"><span class="pre">TransformerConfig.EOS_IDX</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.TransformerConfig.TransformerConfig.PAD_IDX"><code class="docutils literal notranslate"><span class="pre">TransformerConfig.PAD_IDX</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.TransformerConfig.TransformerConfig.backend"><code class="docutils literal notranslate"><span class="pre">TransformerConfig.backend</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.TransformerConfig.TransformerConfig.batch_size"><code class="docutils literal notranslate"><span class="pre">TransformerConfig.batch_size</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.TransformerConfig.TransformerConfig.beta1"><code class="docutils literal notranslate"><span class="pre">TransformerConfig.beta1</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.TransformerConfig.TransformerConfig.beta2"><code class="docutils literal notranslate"><span class="pre">TransformerConfig.beta2</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.TransformerConfig.TransformerConfig.bias"><code class="docutils literal notranslate"><span class="pre">TransformerConfig.bias</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.TransformerConfig.TransformerConfig.block_size"><code class="docutils literal notranslate"><span class="pre">TransformerConfig.block_size</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.TransformerConfig.TransformerConfig.compile"><code class="docutils literal notranslate"><span class="pre">TransformerConfig.compile</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.TransformerConfig.TransformerConfig.ddp"><code class="docutils literal notranslate"><span class="pre">TransformerConfig.ddp</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.TransformerConfig.TransformerConfig.device"><code class="docutils literal notranslate"><span class="pre">TransformerConfig.device</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.TransformerConfig.TransformerConfig.device_type"><code class="docutils literal notranslate"><span class="pre">TransformerConfig.device_type</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.TransformerConfig.TransformerConfig.dropout"><code class="docutils literal notranslate"><span class="pre">TransformerConfig.dropout</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.TransformerConfig.TransformerConfig.eval_interval"><code class="docutils literal notranslate"><span class="pre">TransformerConfig.eval_interval</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.TransformerConfig.TransformerConfig.dtype"><code class="docutils literal notranslate"><span class="pre">TransformerConfig.dtype</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.TransformerConfig.TransformerConfig.eps"><code class="docutils literal notranslate"><span class="pre">TransformerConfig.eps</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.TransformerConfig.TransformerConfig.eval_iters"><code class="docutils literal notranslate"><span class="pre">TransformerConfig.eval_iters</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.TransformerConfig.TransformerConfig.grad_accumulation_steps"><code class="docutils literal notranslate"><span class="pre">TransformerConfig.grad_accumulation_steps</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.TransformerConfig.TransformerConfig.learning_rate"><code class="docutils literal notranslate"><span class="pre">TransformerConfig.learning_rate</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.TransformerConfig.TransformerConfig.max_epochs"><code class="docutils literal notranslate"><span class="pre">TransformerConfig.max_epochs</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.TransformerConfig.TransformerConfig.max_iters"><code class="docutils literal notranslate"><span class="pre">TransformerConfig.max_iters</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.TransformerConfig.TransformerConfig.n_embd"><code class="docutils literal notranslate"><span class="pre">TransformerConfig.n_embd</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.TransformerConfig.TransformerConfig.n_head"><code class="docutils literal notranslate"><span class="pre">TransformerConfig.n_head</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.TransformerConfig.TransformerConfig.n_layer"><code class="docutils literal notranslate"><span class="pre">TransformerConfig.n_layer</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.TransformerConfig.TransformerConfig.tokenizer"><code class="docutils literal notranslate"><span class="pre">TransformerConfig.tokenizer</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.TransformerConfig.TransformerConfig.visualize"><code class="docutils literal notranslate"><span class="pre">TransformerConfig.visualize</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.TransformerConfig.TransformerConfig.train_data_size"><code class="docutils literal notranslate"><span class="pre">TransformerConfig.train_data_size</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.TransformerConfig.TransformerConfig.vocab_size"><code class="docutils literal notranslate"><span class="pre">TransformerConfig.vocab_size</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.TransformerConfig.TransformerConfig.weight_decay"><code class="docutils literal notranslate"><span class="pre">TransformerConfig.weight_decay</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -125,6 +139,11 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="utils.html#module-utils.plot_losses">utils.plot_losses module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="utils.html#utils.plot_losses.plot_losses"><code class="docutils literal notranslate"><span class="pre">plot_losses()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#module-utils.training_loop">utils.training_loop module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="utils.html#utils.training_loop.get_linear_schedule_with_warmup"><code class="docutils literal notranslate"><span class="pre">get_linear_schedule_with_warmup()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.html#utils.training_loop.training_loop"><code class="docutils literal notranslate"><span class="pre">training_loop()</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="utils.html#module-utils">Module contents</a></li>

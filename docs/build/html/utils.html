@@ -39,7 +39,7 @@
 <span id="utils-estimate-loss-module"></span><h2>utils.estimate_loss module<a class="headerlink" href="#module-utils.estimate_loss" title="Permalink to this heading">¶</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="utils.estimate_loss.estimate_loss">
-<span class="sig-prename descclassname"><span class="pre">utils.estimate_loss.</span></span><span class="sig-name descname"><span class="pre">estimate_loss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">splits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['train',</span> <span class="pre">'val']</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.estimate_loss.estimate_loss" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">utils.estimate_loss.</span></span><span class="sig-name descname"><span class="pre">estimate_loss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">splits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['train',</span> <span class="pre">'val']</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.estimate_loss.estimate_loss" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function estimates the loss of a model on specified data splits without performing backpropagation.
 It sets the model to evaluation mode, iterates over the data splits and calculates the average loss.</p>
 <dl class="simple">
@@ -58,11 +58,40 @@ splits (list[str]): List of the names of data splits to use for estimation.</p>
 <span id="utils-plot-losses-module"></span><h2>utils.plot_losses module<a class="headerlink" href="#module-utils.plot_losses" title="Permalink to this heading">¶</a></h2>
 <dl class="py function">
 <dt class="sig sig-object py" id="utils.plot_losses.plot_losses">
-<span class="sig-prename descclassname"><span class="pre">utils.plot_losses.</span></span><span class="sig-name descname"><span class="pre">plot_losses</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">losses</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.plot_losses.plot_losses" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">utils.plot_losses.</span></span><span class="sig-name descname"><span class="pre">plot_losses</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">losses</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xlim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ylim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.plot_losses.plot_losses" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plots the losses for training and validation with more vibrant colors on a black background.</p>
 <dl class="simple">
 <dt>Args:</dt><dd><ul class="simple">
 <li><p>losses (dict): A dictionary containing ‘train’ and ‘val’ lists with losses recorded for each epoch.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+<section id="module-utils.training_loop">
+<span id="utils-training-loop-module"></span><h2>utils.training_loop module<a class="headerlink" href="#module-utils.training_loop" title="Permalink to this heading">¶</a></h2>
+<dl class="py function">
+<dt class="sig sig-object py" id="utils.training_loop.get_linear_schedule_with_warmup">
+<span class="sig-prename descclassname"><span class="pre">utils.training_loop.</span></span><span class="sig-name descname"><span class="pre">get_linear_schedule_with_warmup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">optimizer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_warmup_steps</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_training_steps</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.training_loop.get_linear_schedule_with_warmup" title="Permalink to this definition">¶</a></dt>
+<dd><p>“warm-up, then decay” strategy.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="utils.training_loop.training_loop">
+<span class="sig-prename descclassname"><span class="pre">utils.training_loop.</span></span><span class="sig-name descname"><span class="pre">training_loop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scaler</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">saved_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'./out/transformer_state_dict.pth'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.training_loop.training_loop" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function performs the training loop for the given transformer model. It trains the model using the provided 
+optimizer and dataset according to the specified configuration.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ul class="simple">
+<li><p>model (Transformer): The transformer model to be trained.</p></li>
+<li><p>optimizer (torch.optim.Optimizer): The optimizer used to update the model’s parameters.</p></li>
+<li><p>dataset (CustomDataset): The dataset used for training and validation. It should provide a ‘get_batch’ method.</p></li>
+<li><p>config (Config): The configuration object that defines parameters like max_iters.</p></li>
+</ul>
+</dd>
+<dt>Returns:</dt><dd><ul class="simple">
+<li><p>losses_list (dict): A dictionary that contains the training and validation losses per evaluation step.</p></li>
 </ul>
 </dd>
 </dl>
