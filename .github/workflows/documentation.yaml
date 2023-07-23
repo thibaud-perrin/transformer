@@ -14,15 +14,21 @@ jobs:
       - name: ls
         run: |
           ls
-      - name: ls
-        run: |
-          ls docs
       - name: sphinx-apidoc
         run: |
           sphinx-apidoc -f -o docs/source/ .
+      - name: moving
+        run: |
+          cd docs
+      - name: ls
+        run: |
+          ls
+      - name: ls
+        run: |
+          ls source
       - name: make html
         run: |
-          sphinx-build docs/source build
+          make html
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
