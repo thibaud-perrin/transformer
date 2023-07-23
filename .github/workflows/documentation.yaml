@@ -11,19 +11,13 @@ jobs:
       - name: Install dependencies
         run: |
           pip install sphinx sphinx_rtd_theme
-      - name: ls
-        run: |
-          ls
       - name: sphinx-apidoc
         run: |
           sphinx-apidoc -f -o docs/source/ .
       - name: ls
-        run: |
-          ls
-      - name: ls
         working-directory: ./docs
         run: |
-          ls source
+          ls
       - name: make html
         working-directory: ./docs
         run: |
