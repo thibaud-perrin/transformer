@@ -17,16 +17,15 @@ jobs:
       - name: sphinx-apidoc
         run: |
           sphinx-apidoc -f -o docs/source/ .
-      - name: moving
-        run: |
-          cd docs
       - name: ls
         run: |
           ls
       - name: ls
+        working-directory: ./docs
         run: |
           ls source
       - name: make html
+        working-directory: ./docs
         run: |
           make html
       - name: Deploy
