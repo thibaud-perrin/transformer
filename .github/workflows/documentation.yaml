@@ -11,15 +11,18 @@ jobs:
       - name: Install dependencies
         run: |
           pip install sphinx sphinx_rtd_theme
+      - name: ls
+        run: |
+          ls
+      - name: ls
+        run: |
+          ls docs
       - name: sphinx-apidoc
         run: |
           sphinx-apidoc -f -o docs/source/ .
-      - name: moving
-        run: |
-          cd docs
       - name: make html
         run: |
-          sphinx-build source build
+          sphinx-build docs/source build
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
