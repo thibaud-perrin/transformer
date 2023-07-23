@@ -16,4 +16,4 @@ docs/.buildinfo
 *.pyo
 docs/*.pyc
 # If using a makefile
-Makefile
+# Makefile

@@ -10,6 +10,7 @@ jobs:
       - uses: actions/setup-python@v3
       - name: Install dependencies
         run: |
+          python -m pip install --upgrade pip
           pip install sphinx sphinx_rtd_theme
       - name: sphinx-apidoc
         run: |
@@ -17,7 +18,7 @@ jobs:
       - name: Build documentation
         working-directory: ./docs
         run: |
-          ls
+          ls -al
           cat Makefile
           sphinx-build --version
           make html
