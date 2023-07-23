@@ -48,11 +48,12 @@ pipenv install torch torchvision torchaudio --index-url https://download.pytorch
 ## Project Structure
 Located at the base of the project are the primary execution files:
 
-- `Transformer.ipynb` provides a comprehensive explanation of the complete transformer architecture.
+- `Transformer.ipynb` provides a comprehensive explanation of the complete transformer architecture. _(This notebook is deprecated, but it can help to understand how transformer work, if you want the real code go to `transformer_implementation` directory)_
 - `mini-gpt.ipynb` is used to developed the encoder only generation charcter by character.
 - `train.ipynb` is used for model training.
-- `visualize.ipynb` is used for model evaluation and translation generation.
-Within the transformer_implementation directory, you'll find the transformer architecture broken down into class files such as `Encoder`, `Decoder`, `Blocks`, `FeedForward`, and `others`.
+- `visualize.ipynb` is used for model evaluation and translation generation.  
+
+Within the `transformer_implementation` directory, you'll find the transformer architecture broken down into class files such as `Encoder`, `Decoder`, `Blocks`, `FeedForward`, and `others`.
 
 The `utils` directory contains the functions used for training, evaluation, and visualization of the model.
 

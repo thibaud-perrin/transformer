@@ -3,11 +3,42 @@ import torch
 from torch.nn import functional as F
 
 class Tokenizer():
-    """A tokenizer class for encoding/decoding text sequences."""
+    """
+    Implements a Tokenizer based on the tiktoken library for encoding and decoding sequences.
+    
+    The tokenizer has special tokens for the beginning of sentence (BOS), end of sentence (EOS), and padding (PAD). 
+    The sequence can be padded to a fixed length for processing in batch.
+    
+    Attributes
+    ----------
+    BOS_IDX : int
+        The index of the Beginning of Sentence (BOS) token.
+    EOS_IDX : int
+        The index of the End of Sentence (EOS) token.
+    PAD_IDX : int
+        The index of the Padding (PAD) token.
+    encoder : tiktoken.Encoding
+        The encoding object used for converting sequences to and from tokens.
+
+    Methods
+    -------
+    vocab_size() -> int:
+        Returns the size of the vocabulary.
+    sequence_padding(sequence, max_size: int, device: str) -> torch.Tensor:
+        Returns the padded sequence as a tensor.
+    sequence_cleaner(sequence) -> list:
+        Returns the cleaned sequence without any special tokens.
+    generate_padding_mask(seq, triu: bool, device: str) -> torch.Tensor:
+        Returns a mask for the padding tokens in the sequence.
+    tokenize(sequence, device: str) -> list:
+        Returns the tokenized sequence.
+    tokenize_from_str(sequence, device: str) -> list:
+        Returns the tokenized sequence for a given string.
+    """
 
     def __init__(self):
         """
-        Constructor method to initialize special token indices and tokenizer encoding. 
+        Initializes the tokenizer.
         """
         # Initialize special token indices
         self.BOS_IDX: int = 100264  # Index for the Beginning of Sentence token
@@ -32,25 +63,33 @@ class Tokenizer():
         
     def vocab_size(self) -> int:
         """
-        Method to return the size of the vocabulary in the tokenizer's encoding.
-
-        Returns:
-            int: The size of the vocabulary.
+        Returns the size of the vocabulary.
+        
+        Returns
+        -------
+        int
+            The size of the vocabulary.
         """
         return self.encoder.n_vocab
 
 
     def sequence_padding(self, sequence, max_size: int = 512, device: str = "cpu") -> torch.Tensor:
         """
-        Method to add BOS/PAD/EOS special tokens and ensure the sequence length is within the maximum size.
-
-        Args:
-            sequence (torch.Tensor or list): The input sequence.
-            max_size (int, optional): The maximum allowed size for the sequence. Defaults to 512.
-            device (str, optional): The device where the tensors will be allocated. Defaults to "cpu".
-
-        Returns:
-            torch.Tensor: The processed sequence with special tokens added and length limited.
+        Pads the sequence to the max_size with the PAD token.
+        
+        Parameters
+        ----------
+        sequence : Union[torch.Tensor, list]
+            The sequence to be padded.
+        max_size : int, optional
+            The maximum size of the sequence after padding. Defaults to 512.
+        device : str, optional
+            The device where the tensor will be allocated. Defaults to "cpu".
+            
+        Returns
+        -------
+        torch.Tensor
+            The padded sequence.
         """
         assert max_size > 2, f"[max_size]: {max_size} should be greater than 2"
         # Ensure the sequence is a torch tensor
@@ -75,7 +114,19 @@ class Tokenizer():
         return tensor_sequence
     
     def sequence_cleaner(self, sequence):
-        """ Method used to remove BOS/PAD/EOS special tokens """
+        """
+        Removes the special tokens from the sequence.
+        
+        Parameters
+        ----------
+        sequence : Union[torch.Tensor, list]
+            The sequence to be cleaned.
+            
+        Returns
+        -------
+        list
+            The cleaned sequence.
+        """
         # Checking tensor format
         list_sequence = sequence.tolist() if torch.is_tensor(sequence) else sequence
         def check_special(number):
@@ -83,6 +134,23 @@ class Tokenizer():
         return list(filter(check_special, list_sequence))
 
     def generate_padding_mask(self, seq, triu = False, device="cpu"):
+        """
+        Generates a mask for the padding tokens in the sequence.
+        
+        Parameters
+        ----------
+        seq : torch.Tensor
+            The sequence for which the mask will be generated.
+        triu : bool, optional
+            If True, the mask will be a upper triangular matrix. Defaults to False.
+        device : str, optional
+            The device where the tensor will be allocated. Defaults to "cpu".
+            
+        Returns
+        -------
+        torch.Tensor
+            The mask for the sequence.
+        """
         # seq shape is (B, T) where B is batch size and T is sequence length
         # padding mask should be of size (B, 1, 1, T), mask should be True for padding tokens and False for others
         mask = (seq != self.PAD_IDX).unsqueeze(0).unsqueeze(0).to(device)
@@ -94,14 +162,19 @@ class Tokenizer():
 
     def tokenize(self, sequence, device="cpu") -> list:
         """
-        Method to generate a str list of separated tokens token.
-
-        Args:
-            sequence (torch.Tensor or list): The input sequence.
-            device (str, optional): The device where the tensors will be allocated. Defaults to "cpu".
-
-        Returns:
-            list: The processed sequence converted in a list of tokens in string format.
+        Tokenizes the sequence using the encoder.
+        
+        Parameters
+        ----------
+        sequence : Union[torch.Tensor, list]
+            The sequence to be tokenized.
+        device : str, optional
+            The device where the tensor will be allocated. Defaults to "cpu".
+            
+        Returns
+        -------
+        list
+            The tokenized sequence.
         """
         # Ensure the sequence is a torch tensor
         tensor_sequence = torch.tensor(sequence, dtype=torch.long).to(device) if not torch.is_tensor(self.sequence_cleaner(sequence)) else sequence.to(device)
@@ -112,4 +185,19 @@ class Tokenizer():
         return tensor_sequence
 
     def tokenize_from_str(self, sequence, device="cpu") -> list:
+        """
+        Tokenizes the string sequence using the encoder.
+        
+        Parameters
+        ----------
+        sequence : str
+            The string sequence to be tokenized.
+        device : str, optional
+            The device where the tensor will be allocated. Defaults to "cpu".
+            
+        Returns
+        -------
+        list
+            The tokenized sequence.
+        """
         return self.tokenize(self.encoder.encode(sequence), device)

@@ -79,48 +79,87 @@
 <dt class="sig sig-object py" id="transformer_implementation.DataLoaderFactory.DataLoaderFactory">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">transformer_implementation.DataLoaderFactory.</span></span><span class="sig-name descname"><span class="pre">DataLoaderFactory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">block_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tokenizer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">train_dataset_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">5000000</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#transformer_implementation.DataLoaderFactory.DataLoaderFactory" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>A class to instantiate PyTorch DataLoaders for different splits of a HuggingFace Dataset.</p>
+<p>Factory class to create dataloaders for training, validation, and testing datasets.</p>
+<p>It initializes the datasets and dataloaders for the given block size, batch size, 
+tokenizer, and device. The dataloaders can be accessed directly through the 
+corresponding attributes.</p>
+<section id="attributes">
+<h3>Attributes<a class="headerlink" href="#attributes" title="Permalink to this heading">¶</a></h3>
 <dl class="simple">
-<dt>Args:</dt><dd><ul class="simple">
-<li><p>block_size (int): The maximum sequence length for tokenization.</p></li>
-<li><p>batch_size (int): The batch size for DataLoader.</p></li>
-<li><p>tokenizer (Tokenizer): a tokenizer that has an encode method.</p></li>
-<li><p>device (str): ‘cpu’ or ‘cuda’, depending on whether we use CPU or GPU.</p></li>
-</ul>
+<dt>train_data<span class="classifier">TranslationDataset</span></dt><dd><p>The training dataset.</p>
+</dd>
+<dt>val_data<span class="classifier">TranslationDataset</span></dt><dd><p>The validation dataset.</p>
+</dd>
+<dt>test_data<span class="classifier">TranslationDataset</span></dt><dd><p>The testing dataset.</p>
+</dd>
+<dt>dataloader_train<span class="classifier">torch.utils.data.DataLoader</span></dt><dd><p>Dataloader for the training dataset.</p>
+</dd>
+<dt>dataloader_val<span class="classifier">torch.utils.data.DataLoader</span></dt><dd><p>Dataloader for the validation dataset.</p>
+</dd>
+<dt>dataloader_test<span class="classifier">torch.utils.data.DataLoader</span></dt><dd><p>Dataloader for the testing dataset.</p>
+</dd>
+</dl>
+</section>
+<section id="methods">
+<h3>Methods<a class="headerlink" href="#methods" title="Permalink to this heading">¶</a></h3>
+<dl class="simple">
+<dt>__len__() -&gt; int:</dt><dd><p>Prints and returns the number of items in each dataset and total.</p>
+</dd>
+<dt>get_batch(split: str) -&gt; dict:</dt><dd><p>Returns a generator that iterates over the batches in the specified split.</p>
 </dd>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="transformer_implementation.DataLoaderFactory.DataLoaderFactory.get_batch">
 <span class="sig-name descname"><span class="pre">get_batch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">split</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#transformer_implementation.DataLoaderFactory.DataLoaderFactory.get_batch" title="Permalink to this definition">¶</a></dt>
-<dd><p>Choose the correct DataLoader and yield batches from it.</p>
-<dl>
-<dt>Args:</dt><dd><ul class="simple">
-<li><p>split (str): ‘train’, ‘val’ or ‘test’.</p></li>
-</ul>
-</dd>
-<dt>Yields:</dt><dd><ul class="simple">
-<li><p>Dict: a dictionary with keys ‘inputs’, ‘targets’ and ‘translation’, containing a batch of tokenized input,</p></li>
-</ul>
-<p>target sequences and original translation.</p>
+<dd><p>Returns a generator that iterates over the batches in the specified split.</p>
+<section id="parameters">
+<h4>Parameters<a class="headerlink" href="#parameters" title="Permalink to this heading">¶</a></h4>
+<dl class="simple">
+<dt>split<span class="classifier">str</span></dt><dd><p>The split to use. Must be one of ‘train’, ‘val’, or ‘test’.</p>
 </dd>
 </dl>
+</section>
+<section id="yields">
+<h4>Yields<a class="headerlink" href="#yields" title="Permalink to this heading">¶</a></h4>
+<dl class="simple">
+<dt>dict</dt><dd><p>The next batch in the specified split. Each batch is a dictionary that 
+contains tensors moved to the specified device and the ‘translation’ field.</p>
+</dd>
+</dl>
+</section>
 </dd></dl>
 
+</section>
 </dd></dl>
 
 <dl class="py class">
 <dt class="sig sig-object py" id="transformer_implementation.DataLoaderFactory.TranslationDataset">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">transformer_implementation.DataLoaderFactory.</span></span><span class="sig-name descname"><span class="pre">TranslationDataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tokenizer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block_size</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#transformer_implementation.DataLoaderFactory.TranslationDataset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Dataset</span></code></p>
-<p>A PyTorch Dataset class to be used in a PyTorch DataLoader to create batches.</p>
+<p>Dataset for English to French translation tasks.</p>
+<p>The dataset includes ‘translation’ field which is a dict that contains 
+source text in English (‘en’) and target text in French (‘fr’).</p>
+<section id="id1">
+<h3>Attributes<a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h3>
 <dl class="simple">
-<dt>Args:</dt><dd><ul class="simple">
-<li><p>dataset (Dataset): a dataset from HuggingFace datasets library.</p></li>
-<li><p>tokenizer (Tokenizer): The custom tiktoken tokenizer used to encode sequences.</p></li>
-<li><p>block_size (int): The maximum sequence length for tokenization.</p></li>
-</ul>
+<dt>dataset<span class="classifier">object</span></dt><dd><p>The dataset object containing translations.</p>
+</dd>
+<dt>tokenizer<span class="classifier">object</span></dt><dd><p>The tokenizer object used for encoding the translations.</p>
+</dd>
+<dt>block_size<span class="classifier">int</span></dt><dd><p>The maximum length of the tokenized sequences.</p>
 </dd>
 </dl>
+</section>
+<section id="id2">
+<h3>Methods<a class="headerlink" href="#id2" title="Permalink to this heading">¶</a></h3>
+<dl class="simple">
+<dt>__getitem__(index: int) -&gt; dict:</dt><dd><p>Returns the tokenized input and target sequences, their corresponding masks, 
+and the original translation for a given index.</p>
+</dd>
+<dt>__len__() -&gt; int:</dt><dd><p>Returns the number of items in the dataset.</p>
+</dd>
+</dl>
+</section>
 </dd></dl>
 
 </section>
@@ -135,8 +174,8 @@
 embeddings for both the vocabulary and the positions. The core of the 
 decoder is a sequence of DecoderBlock modules. The output of the decoder 
 is then processed by a linear layer to produce the final output.</p>
-<section id="attributes">
-<h3>Attributes<a class="headerlink" href="#attributes" title="Permalink to this heading">¶</a></h3>
+<section id="id3">
+<h3>Attributes<a class="headerlink" href="#id3" title="Permalink to this heading">¶</a></h3>
 <dl class="simple">
 <dt>config<span class="classifier">object</span></dt><dd><p>A configuration object with the necessary attributes for the decoder.</p>
 </dd>
@@ -147,8 +186,8 @@ embeddings, dropout, DecoderBlock sequence, and LayerNorm.</p>
 </dd>
 </dl>
 </section>
-<section id="methods">
-<h3>Methods<a class="headerlink" href="#methods" title="Permalink to this heading">¶</a></h3>
+<section id="id4">
+<h3>Methods<a class="headerlink" href="#id4" title="Permalink to this heading">¶</a></h3>
 <dl class="simple">
 <dt>get_num_params(non_embedding: bool = True) -&gt; int:</dt><dd><p>Returns the number of parameters in the decoder.</p>
 </dd>
@@ -158,8 +197,8 @@ embeddings, dropout, DecoderBlock sequence, and LayerNorm.</p>
 </dd>
 </dl>
 </section>
-<section id="parameters">
-<h3>Parameters<a class="headerlink" href="#parameters" title="Permalink to this heading">¶</a></h3>
+<section id="id5">
+<h3>Parameters<a class="headerlink" href="#id5" title="Permalink to this heading">¶</a></h3>
 <dl class="simple">
 <dt>config<span class="classifier">object</span></dt><dd><p>A configuration object with necessary attributes, including 
 vocab_size, n_embd, block_size, dropout, n_layer, and bias.</p>
@@ -169,8 +208,8 @@ vocab_size, n_embd, block_size, dropout, n_layer, and bias.</p>
 <dt class="sig sig-object py" id="transformer_implementation.Decoder.Decoder.forward">
 <span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">enc_output</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">src_mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tgt_mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#transformer_implementation.Decoder.Decoder.forward" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes the forward pass of the decoder.</p>
-<section id="id1">
-<h4>Parameters<a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h4>
+<section id="id6">
+<h4>Parameters<a class="headerlink" href="#id6" title="Permalink to this heading">¶</a></h4>
 <dl class="simple">
 <dt>idx<span class="classifier">torch.Tensor</span></dt><dd><p>The input tensor with token indices.</p>
 </dd>
@@ -199,16 +238,16 @@ from the decoder blocks, and a list of cross-attention scores.</p>
 For non-embedding count (default), the position embeddings get subtracted.
 The token embeddings would too, except due to the parameter sharing these
 params are actually used as weights in the final layer, so we include them.</p>
-<section id="id2">
-<h4>Parameters<a class="headerlink" href="#id2" title="Permalink to this heading">¶</a></h4>
+<section id="id7">
+<h4>Parameters<a class="headerlink" href="#id7" title="Permalink to this heading">¶</a></h4>
 <dl class="simple">
 <dt>non_embedding<span class="classifier">bool, optional</span></dt><dd><p>If True, does not count the parameters of the position embedding
 layer. Default is True.</p>
 </dd>
 </dl>
 </section>
-<section id="id3">
-<h4>Returns<a class="headerlink" href="#id3" title="Permalink to this heading">¶</a></h4>
+<section id="id8">
+<h4>Returns<a class="headerlink" href="#id8" title="Permalink to this heading">¶</a></h4>
 <dl class="simple">
 <dt>int</dt><dd><p>The number of parameters in the decoder.</p>
 </dd>
@@ -230,8 +269,8 @@ layer. Default is True.</p>
 <p>This class inherits from the PyTorch nn.Module class and includes 
 token and position embeddings, dropout, multiple encoder blocks, and
 layer normalization.</p>
-<section id="id4">
-<h3>Attributes<a class="headerlink" href="#id4" title="Permalink to this heading">¶</a></h3>
+<section id="id9">
+<h3>Attributes<a class="headerlink" href="#id9" title="Permalink to this heading">¶</a></h3>
 <dl class="simple">
 <dt>config<span class="classifier">object</span></dt><dd><dl class="simple">
 <dt>A configuration object with the following attributes:</dt><dd><p>vocab_size (int): The size of the vocabulary.
@@ -254,8 +293,8 @@ ln_f (LayerNorm): The final layer normalization.</p>
 </dd>
 </dl>
 </section>
-<section id="id5">
-<h3>Methods<a class="headerlink" href="#id5" title="Permalink to this heading">¶</a></h3>
+<section id="id10">
+<h3>Methods<a class="headerlink" href="#id10" title="Permalink to this heading">¶</a></h3>
 <dl class="simple">
 <dt>get_num_params(non_embedding: bool = True) -&gt; int:</dt><dd><p>Returns the total number of parameters.</p>
 </dd>
@@ -265,8 +304,8 @@ ln_f (LayerNorm): The final layer normalization.</p>
 </dd>
 </dl>
 </section>
-<section id="id6">
-<h3>Parameters<a class="headerlink" href="#id6" title="Permalink to this heading">¶</a></h3>
+<section id="id11">
+<h3>Parameters<a class="headerlink" href="#id11" title="Permalink to this heading">¶</a></h3>
 <dl class="simple">
 <dt>config<span class="classifier">object</span></dt><dd><dl class="simple">
 <dt>A configuration object with the following attributes:</dt><dd><p>vocab_size (int): The size of the vocabulary.
@@ -283,8 +322,8 @@ bias (bool): If True, the linear layers will include a bias term.</p>
 <dt class="sig sig-object py" id="transformer_implementation.Encoder.Encoder.forward">
 <span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#transformer_implementation.Encoder.Encoder.forward" title="Permalink to this definition">¶</a></dt>
 <dd><p>Implements the forward pass of the encoder.</p>
-<section id="id7">
-<h4>Parameters<a class="headerlink" href="#id7" title="Permalink to this heading">¶</a></h4>
+<section id="id12">
+<h4>Parameters<a class="headerlink" href="#id12" title="Permalink to this heading">¶</a></h4>
 <dl class="simple">
 <dt>idx<span class="classifier">torch.Tensor</span></dt><dd><p>The input tensor with indices of tokens in the sequence.</p>
 </dd>
@@ -292,8 +331,8 @@ bias (bool): If True, the linear layers will include a bias term.</p>
 </dd>
 </dl>
 </section>
-<section id="id8">
-<h4>Returns<a class="headerlink" href="#id8" title="Permalink to this heading">¶</a></h4>
+<section id="id13">
+<h4>Returns<a class="headerlink" href="#id13" title="Permalink to this heading">¶</a></h4>
 <dl class="simple">
 <dt>Tuple[torch.Tensor, List[torch.Tensor]]</dt><dd><p>The output tensor after layer normalization and the list of attention
 matrices from each transformer layer.</p>
@@ -309,15 +348,15 @@ matrices from each transformer layer.</p>
 For non-embedding count (default), the position embeddings get subtracted.
 The token embeddings would too, except due to the parameter sharing these
 params are actually used as weights in the final layer, so we include them.</p>
-<section id="id9">
-<h4>Parameters<a class="headerlink" href="#id9" title="Permalink to this heading">¶</a></h4>
+<section id="id14">
+<h4>Parameters<a class="headerlink" href="#id14" title="Permalink to this heading">¶</a></h4>
 <dl class="simple">
 <dt>non_embedding<span class="classifier">bool, optional</span></dt><dd><p>If True, subtracts the number of embedding parameters from the total.</p>
 </dd>
 </dl>
 </section>
-<section id="id10">
-<h4>Returns<a class="headerlink" href="#id10" title="Permalink to this heading">¶</a></h4>
+<section id="id15">
+<h4>Returns<a class="headerlink" href="#id15" title="Permalink to this heading">¶</a></h4>
 <dl class="simple">
 <dt>int</dt><dd><p>The total number of parameters.</p>
 </dd>
@@ -335,60 +374,164 @@ params are actually used as weights in the final layer, so we include them.</p>
 <dt class="sig sig-object py" id="transformer_implementation.Tokenizer.Tokenizer">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">transformer_implementation.Tokenizer.</span></span><span class="sig-name descname"><span class="pre">Tokenizer</span></span><a class="headerlink" href="#transformer_implementation.Tokenizer.Tokenizer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>A tokenizer class for encoding/decoding text sequences.</p>
+<p>Implements a Tokenizer based on the tiktoken library for encoding and decoding sequences.</p>
+<p>The tokenizer has special tokens for the beginning of sentence (BOS), end of sentence (EOS), and padding (PAD). 
+The sequence can be padded to a fixed length for processing in batch.</p>
+<section id="id16">
+<h3>Attributes<a class="headerlink" href="#id16" title="Permalink to this heading">¶</a></h3>
+<dl class="simple">
+<dt>BOS_IDX<span class="classifier">int</span></dt><dd><p>The index of the Beginning of Sentence (BOS) token.</p>
+</dd>
+<dt>EOS_IDX<span class="classifier">int</span></dt><dd><p>The index of the End of Sentence (EOS) token.</p>
+</dd>
+<dt>PAD_IDX<span class="classifier">int</span></dt><dd><p>The index of the Padding (PAD) token.</p>
+</dd>
+<dt>encoder<span class="classifier">tiktoken.Encoding</span></dt><dd><p>The encoding object used for converting sequences to and from tokens.</p>
+</dd>
+</dl>
+</section>
+<section id="id17">
+<h3>Methods<a class="headerlink" href="#id17" title="Permalink to this heading">¶</a></h3>
+<dl class="simple">
+<dt>vocab_size() -&gt; int:</dt><dd><p>Returns the size of the vocabulary.</p>
+</dd>
+<dt>sequence_padding(sequence, max_size: int, device: str) -&gt; torch.Tensor:</dt><dd><p>Returns the padded sequence as a tensor.</p>
+</dd>
+<dt>sequence_cleaner(sequence) -&gt; list:</dt><dd><p>Returns the cleaned sequence without any special tokens.</p>
+</dd>
+<dt>generate_padding_mask(seq, triu: bool, device: str) -&gt; torch.Tensor:</dt><dd><p>Returns a mask for the padding tokens in the sequence.</p>
+</dd>
+<dt>tokenize(sequence, device: str) -&gt; list:</dt><dd><p>Returns the tokenized sequence.</p>
+</dd>
+<dt>tokenize_from_str(sequence, device: str) -&gt; list:</dt><dd><p>Returns the tokenized sequence for a given string.</p>
+</dd>
+</dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="transformer_implementation.Tokenizer.Tokenizer.generate_padding_mask">
 <span class="sig-name descname"><span class="pre">generate_padding_mask</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">seq</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">triu</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#transformer_implementation.Tokenizer.Tokenizer.generate_padding_mask" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Generates a mask for the padding tokens in the sequence.</p>
+<section id="id18">
+<h4>Parameters<a class="headerlink" href="#id18" title="Permalink to this heading">¶</a></h4>
+<dl class="simple">
+<dt>seq<span class="classifier">torch.Tensor</span></dt><dd><p>The sequence for which the mask will be generated.</p>
+</dd>
+<dt>triu<span class="classifier">bool, optional</span></dt><dd><p>If True, the mask will be a upper triangular matrix. Defaults to False.</p>
+</dd>
+<dt>device<span class="classifier">str, optional</span></dt><dd><p>The device where the tensor will be allocated. Defaults to “cpu”.</p>
+</dd>
+</dl>
+</section>
+<section id="id19">
+<h4>Returns<a class="headerlink" href="#id19" title="Permalink to this heading">¶</a></h4>
+<dl class="simple">
+<dt>torch.Tensor</dt><dd><p>The mask for the sequence.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="transformer_implementation.Tokenizer.Tokenizer.sequence_cleaner">
 <span class="sig-name descname"><span class="pre">sequence_cleaner</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sequence</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#transformer_implementation.Tokenizer.Tokenizer.sequence_cleaner" title="Permalink to this definition">¶</a></dt>
-<dd><p>Method used to remove BOS/PAD/EOS special tokens</p>
+<dd><p>Removes the special tokens from the sequence.</p>
+<section id="id20">
+<h4>Parameters<a class="headerlink" href="#id20" title="Permalink to this heading">¶</a></h4>
+<dl class="simple">
+<dt>sequence<span class="classifier">Union[torch.Tensor, list]</span></dt><dd><p>The sequence to be cleaned.</p>
+</dd>
+</dl>
+</section>
+<section id="id21">
+<h4>Returns<a class="headerlink" href="#id21" title="Permalink to this heading">¶</a></h4>
+<dl class="simple">
+<dt>list</dt><dd><p>The cleaned sequence.</p>
+</dd>
+</dl>
+</section>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="transformer_implementation.Tokenizer.Tokenizer.sequence_padding">
 <span class="sig-name descname"><span class="pre">sequence_padding</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sequence</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">512</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'cpu'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tensor</span></span></span><a class="headerlink" href="#transformer_implementation.Tokenizer.Tokenizer.sequence_padding" title="Permalink to this definition">¶</a></dt>
-<dd><p>Method to add BOS/PAD/EOS special tokens and ensure the sequence length is within the maximum size.</p>
+<dd><p>Pads the sequence to the max_size with the PAD token.</p>
+<section id="id22">
+<h4>Parameters<a class="headerlink" href="#id22" title="Permalink to this heading">¶</a></h4>
 <dl class="simple">
-<dt>Args:</dt><dd><p>sequence (torch.Tensor or list): The input sequence.
-max_size (int, optional): The maximum allowed size for the sequence. Defaults to 512.
-device (str, optional): The device where the tensors will be allocated. Defaults to “cpu”.</p>
+<dt>sequence<span class="classifier">Union[torch.Tensor, list]</span></dt><dd><p>The sequence to be padded.</p>
 </dd>
-<dt>Returns:</dt><dd><p>torch.Tensor: The processed sequence with special tokens added and length limited.</p>
+<dt>max_size<span class="classifier">int, optional</span></dt><dd><p>The maximum size of the sequence after padding. Defaults to 512.</p>
+</dd>
+<dt>device<span class="classifier">str, optional</span></dt><dd><p>The device where the tensor will be allocated. Defaults to “cpu”.</p>
 </dd>
 </dl>
+</section>
+<section id="id23">
+<h4>Returns<a class="headerlink" href="#id23" title="Permalink to this heading">¶</a></h4>
+<dl class="simple">
+<dt>torch.Tensor</dt><dd><p>The padded sequence.</p>
+</dd>
+</dl>
+</section>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="transformer_implementation.Tokenizer.Tokenizer.tokenize">
 <span class="sig-name descname"><span class="pre">tokenize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sequence</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#transformer_implementation.Tokenizer.Tokenizer.tokenize" title="Permalink to this definition">¶</a></dt>
-<dd><p>Method to generate a str list of separated tokens token.</p>
+<dd><p>Tokenizes the sequence using the encoder.</p>
+<section id="id24">
+<h4>Parameters<a class="headerlink" href="#id24" title="Permalink to this heading">¶</a></h4>
 <dl class="simple">
-<dt>Args:</dt><dd><p>sequence (torch.Tensor or list): The input sequence.
-device (str, optional): The device where the tensors will be allocated. Defaults to “cpu”.</p>
+<dt>sequence<span class="classifier">Union[torch.Tensor, list]</span></dt><dd><p>The sequence to be tokenized.</p>
 </dd>
-<dt>Returns:</dt><dd><p>list: The processed sequence converted in a list of tokens in string format.</p>
+<dt>device<span class="classifier">str, optional</span></dt><dd><p>The device where the tensor will be allocated. Defaults to “cpu”.</p>
 </dd>
 </dl>
+</section>
+<section id="id25">
+<h4>Returns<a class="headerlink" href="#id25" title="Permalink to this heading">¶</a></h4>
+<dl class="simple">
+<dt>list</dt><dd><p>The tokenized sequence.</p>
+</dd>
+</dl>
+</section>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="transformer_implementation.Tokenizer.Tokenizer.tokenize_from_str">
 <span class="sig-name descname"><span class="pre">tokenize_from_str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sequence</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'cpu'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#transformer_implementation.Tokenizer.Tokenizer.tokenize_from_str" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Tokenizes the string sequence using the encoder.</p>
+<section id="id26">
+<h4>Parameters<a class="headerlink" href="#id26" title="Permalink to this heading">¶</a></h4>
+<dl class="simple">
+<dt>sequence<span class="classifier">str</span></dt><dd><p>The string sequence to be tokenized.</p>
+</dd>
+<dt>device<span class="classifier">str, optional</span></dt><dd><p>The device where the tensor will be allocated. Defaults to “cpu”.</p>
+</dd>
+</dl>
+</section>
+<section id="id27">
+<h4>Returns<a class="headerlink" href="#id27" title="Permalink to this heading">¶</a></h4>
+<dl class="simple">
+<dt>list</dt><dd><p>The tokenized sequence.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="transformer_implementation.Tokenizer.Tokenizer.vocab_size">
 <span class="sig-name descname"><span class="pre">vocab_size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#transformer_implementation.Tokenizer.Tokenizer.vocab_size" title="Permalink to this definition">¶</a></dt>
-<dd><p>Method to return the size of the vocabulary in the tokenizer’s encoding.</p>
+<dd><p>Returns the size of the vocabulary.</p>
+<section id="id28">
+<h4>Returns<a class="headerlink" href="#id28" title="Permalink to this heading">¶</a></h4>
 <dl class="simple">
-<dt>Returns:</dt><dd><p>int: The size of the vocabulary.</p>
+<dt>int</dt><dd><p>The size of the vocabulary.</p>
 </dd>
 </dl>
+</section>
 </dd></dl>
 
+</section>
 </dd></dl>
 
 </section>
@@ -398,73 +541,158 @@ device (str, optional): The device where the tensors will be allocated. Defaults
 <dt class="sig sig-object py" id="transformer_implementation.Transformer.Transformer">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">transformer_implementation.Transformer.</span></span><span class="sig-name descname"><span class="pre">Transformer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">config</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#transformer_implementation.Transformer.Transformer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
-<p>This class implements the Transformer model, which includes both the encoder and decoder.</p>
-<p>The Transformer is a sequence transduction model that uses attention mechanisms.
-It is primarily used in tasks that require understanding of context or relationships among words in a text.</p>
+<p>A PyTorch implementation of a Transformer model.</p>
+<p>The Transformer model consists of an Encoder and a Decoder. 
+It supports functionalities like forward pass, token generation, optimizer configuration,
+and save/load model state.</p>
+<section id="id29">
+<h3>Attributes<a class="headerlink" href="#id29" title="Permalink to this heading">¶</a></h3>
 <dl class="simple">
-<dt>Attributes:</dt><dd><ul class="simple">
-<li><p>encoder (Encoder): The transformer encoder.</p></li>
-<li><p>decoder (Decoder): The transformer decoder.</p></li>
-<li><p>config (<code class="xref py py-obj docutils literal notranslate"><span class="pre">Config</span></code>): The configuration object for the transformer model.</p></li>
-</ul>
+<dt>config<span class="classifier">object</span></dt><dd><p>A configuration object with necessary attributes for Transformer model.</p>
 </dd>
-<dt>Args:</dt><dd><ul class="simple">
-<li><p>config (<code class="xref py py-obj docutils literal notranslate"><span class="pre">Config</span></code>): The configuration object with attributes such as <cite>vocab_size</cite>, <cite>block_size</cite>, <cite>n_embd</cite>, <cite>dropout</cite>, <cite>n_layer</cite>, and <cite>bias</cite>.</p></li>
-</ul>
+<dt>encoder<span class="classifier">Encoder</span></dt><dd><p>The encoder part of the Transformer model.</p>
+</dd>
+<dt>decoder<span class="classifier">Decoder</span></dt><dd><p>The decoder part of the Transformer model.</p>
+</dd>
+</dl>
+</section>
+<section id="id30">
+<h3>Methods<a class="headerlink" href="#id30" title="Permalink to this heading">¶</a></h3>
+<dl class="simple">
+<dt>forward(src, tgt, src_mask=None, tgt_mask=None):</dt><dd><p>Implements the forward pass of the Transformer model and returns the output and loss.</p>
+</dd>
+<dt>generate(src, idx, src_mask=None, max_new_tokens=128, temperature=1.0, top_k=None):</dt><dd><p>Generates new tokens given a source tensor.</p>
+</dd>
+<dt>configure_optimizers(weight_decay, learning_rate, betas, device_type, eps):</dt><dd><p>Configures the AdamW optimizer for the Transformer model.</p>
+</dd>
+<dt>save_model(path: str):</dt><dd><p>Saves the model state to the given file path.</p>
+</dd>
+<dt>load_model(path: str):</dt><dd><p>Loads the model state from the given file path.</p>
+</dd>
+</dl>
+</section>
+<section id="id31">
+<h3>Parameters<a class="headerlink" href="#id31" title="Permalink to this heading">¶</a></h3>
+<dl class="simple">
+<dt>config<span class="classifier">object</span></dt><dd><dl class="simple">
+<dt>A configuration object with necessary parameters for Transformer model. It includes:</dt><dd><p>vocab_size (int): The size of vocabulary.
+block_size (int): The size of a block for Transformer.
+PAD_IDX (int): The index representing padding in token sequence.</p>
+</dd>
+</dl>
 </dd>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="transformer_implementation.Transformer.Transformer.configure_optimizers">
 <span class="sig-name descname"><span class="pre">configure_optimizers</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">weight_decay</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">learning_rate</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">betas</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">device_type</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eps</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#transformer_implementation.Transformer.Transformer.configure_optimizers" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Configures the AdamW optimizer for the Transformer model.</p>
+<section id="id32">
+<h4>Parameters<a class="headerlink" href="#id32" title="Permalink to this heading">¶</a></h4>
+<dl class="simple">
+<dt>weight_decay<span class="classifier">float</span></dt><dd><p>The L2 penalty (regularization) coefficient.</p>
+</dd>
+<dt>learning_rate<span class="classifier">float</span></dt><dd><p>The learning rate for AdamW optimizer.</p>
+</dd>
+<dt>betas<span class="classifier">tuple(float, float)</span></dt><dd><p>Coefficients used for computing running averages of gradient and its square.</p>
+</dd>
+<dt>device_type<span class="classifier">str</span></dt><dd><p>The device type for the optimizer, either “cpu” or “cuda”.</p>
+</dd>
+<dt>eps<span class="classifier">float</span></dt><dd><p>A term added to the denominator to improve numerical stability.</p>
+</dd>
+</dl>
+</section>
+<section id="id33">
+<h4>Returns<a class="headerlink" href="#id33" title="Permalink to this heading">¶</a></h4>
+<dl class="simple">
+<dt>torch.optim.AdamW</dt><dd><p>The AdamW optimizer configured for the Transformer model.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="transformer_implementation.Transformer.Transformer.forward">
 <span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">src</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tgt</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">src_mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tgt_mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#transformer_implementation.Transformer.Transformer.forward" title="Permalink to this definition">¶</a></dt>
-<dd><p>Defines the computation performed at every call.</p>
+<dd><p>Implements the forward pass of the Transformer model.</p>
+<section id="id34">
+<h4>Parameters<a class="headerlink" href="#id34" title="Permalink to this heading">¶</a></h4>
 <dl class="simple">
-<dt>Args:</dt><dd><ul class="simple">
-<li><p>src (torch.Tensor): The input tensor to the encoder.</p></li>
-<li><p>tgt (torch.Tensor): The input tensor to the decoder.</p></li>
-<li><p>src_mask (torch.Tensor): The input_mask tensor to the encoder, size (B, 1, 1, T).</p></li>
-<li><p>tgt_mask (torch.Tensor): The target_masks tensor to the decoder, size (B, 1, 1, T).</p></li>
-</ul>
+<dt>src<span class="classifier">torch.Tensor</span></dt><dd><p>The input tensor for the source sequence.</p>
 </dd>
-<dt>Returns:</dt><dd><ul class="simple">
-<li><p>torch.Tensor: The output tensor (logits) of the model.</p></li>
-<li><p>torch.Tensor: The loss tensor calculated on the basis of the decoder’s output and target tensor.</p></li>
-</ul>
+<dt>tgt<span class="classifier">torch.Tensor</span></dt><dd><p>The input tensor for the target sequence.</p>
+</dd>
+<dt>src_mask<span class="classifier">torch.Tensor, optional</span></dt><dd><p>The input tensor for source sequence masking.</p>
+</dd>
+<dt>tgt_mask<span class="classifier">torch.Tensor, optional</span></dt><dd><p>The input tensor for target sequence masking.</p>
 </dd>
 </dl>
+</section>
+<section id="id35">
+<h4>Returns<a class="headerlink" href="#id35" title="Permalink to this heading">¶</a></h4>
+<dl class="simple">
+<dt>torch.Tensor, torch.Tensor</dt><dd><p>The output tensor post-processed by the Transformer model and the calculated loss.</p>
+</dd>
+</dl>
+</section>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="transformer_implementation.Transformer.Transformer.generate">
 <span class="sig-name descname"><span class="pre">generate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">src</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">idx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">src_mask</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_new_tokens</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">128</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">temperature</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_k</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#transformer_implementation.Transformer.Transformer.generate" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Generates new tokens given a source tensor.</p>
+<section id="id36">
+<h4>Parameters<a class="headerlink" href="#id36" title="Permalink to this heading">¶</a></h4>
+<dl class="simple">
+<dt>src<span class="classifier">torch.Tensor</span></dt><dd><p>The input tensor for the source sequence.</p>
+</dd>
+<dt>idx<span class="classifier">torch.Tensor</span></dt><dd><p>The input tensor with indices in the current context.</p>
+</dd>
+<dt>src_mask<span class="classifier">torch.Tensor, optional</span></dt><dd><p>The input tensor for source sequence masking.</p>
+</dd>
+<dt>max_new_tokens<span class="classifier">int, optional</span></dt><dd><p>The maximum number of new tokens to be generated.</p>
+</dd>
+<dt>temperature<span class="classifier">float, optional</span></dt><dd><p>The softmax temperature for controlling the randomness of predictions.</p>
+</dd>
+<dt>top_k<span class="classifier">int, optional</span></dt><dd><p>The number of highest probability vocabulary tokens to keep for next step prediction.</p>
+</dd>
+</dl>
+</section>
+<section id="id37">
+<h4>Returns<a class="headerlink" href="#id37" title="Permalink to this heading">¶</a></h4>
+<dl class="simple">
+<dt>torch.Tensor, dict</dt><dd><p>The tensor with new generated token indices and a dictionary with attentions.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="transformer_implementation.Transformer.Transformer.load_model">
 <span class="sig-name descname"><span class="pre">load_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#transformer_implementation.Transformer.Transformer.load_model" title="Permalink to this definition">¶</a></dt>
-<dd><p>Loads the model state from a file.</p>
+<dd><p>Loads the model state from the given file path.</p>
+<section id="id38">
+<h4>Parameters<a class="headerlink" href="#id38" title="Permalink to this heading">¶</a></h4>
 <dl class="simple">
-<dt>Args:</dt><dd><p>path (str): The path to the file from where the model state should be loaded.</p>
-</dd>
-<dt>Raises:</dt><dd><p>ValueError: If the specified file does not exist.</p>
+<dt>path<span class="classifier">str</span></dt><dd><p>The file path from where the model state is to be loaded.</p>
 </dd>
 </dl>
+</section>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="transformer_implementation.Transformer.Transformer.save_model">
 <span class="sig-name descname"><span class="pre">save_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#transformer_implementation.Transformer.Transformer.save_model" title="Permalink to this definition">¶</a></dt>
-<dd><p>Saves the current state of the model to a file.</p>
+<dd><p>Saves the model state to the given file path.</p>
+<section id="id39">
+<h4>Parameters<a class="headerlink" href="#id39" title="Permalink to this heading">¶</a></h4>
 <dl class="simple">
-<dt>Args:</dt><dd><p>path (str): The path to the file where the model state should be saved.</p>
+<dt>path<span class="classifier">str</span></dt><dd><p>The file path where the model state is to be saved.</p>
 </dd>
 </dl>
+</section>
 </dd></dl>
 
+</section>
 </dd></dl>
 
 </section>

@@ -6,7 +6,27 @@ from . import estimate_loss
 
 # learning rate warmup and then decay, which is a standard practice in Transformer training.
 def get_linear_schedule_with_warmup(optimizer, num_warmup_steps, num_training_steps):
-    """ "warm-up, then decay" strategy. """
+    """
+    Creates a learning rate scheduler for training Transformers.
+
+    This scheduler first warms up the learning rate linearly for a given number of steps, and then decays the learning 
+    rate linearly to 0 for the rest of the training steps.
+
+    Parameters
+    ----------
+    optimizer : torch.optim.Optimizer
+        The optimizer for which to schedule the learning rate.
+    num_warmup_steps : int
+        The number of steps for the warmup phase.
+    num_training_steps : int
+        The total number of training steps.
+
+    Returns
+    -------
+    torch.optim.lr_scheduler.LambdaLR
+        A learning rate scheduler that adjusts the learning rate of the optimizer according to the warm-up and decay 
+        strategy.
+    """
     def lr_lambda(current_step):
         if current_step < num_warmup_steps:
             return float(current_step) / float(max(1, num_warmup_steps))
@@ -16,17 +36,33 @@ def get_linear_schedule_with_warmup(optimizer, num_warmup_steps, num_training_st
 
 def training_loop(model, ctx, optimizer, scaler, dataset, config, saved_path = "./out/transformer_state_dict.pth"):
     """
-    This function performs the training loop for the given transformer model. It trains the model using the provided 
-    optimizer and dataset according to the specified configuration. 
+    Performs the training loop for the given transformer model using the provided optimizer and dataset.
 
-    Args:
-        - model (Transformer): The transformer model to be trained.
-        - optimizer (torch.optim.Optimizer): The optimizer used to update the model's parameters.
-        - dataset (CustomDataset): The dataset used for training and validation. It should provide a 'get_batch' method.
-        - config (Config): The configuration object that defines parameters like max_iters.
+    This function trains the model for a specified number of epochs, and implements gradient accumulation, gradient 
+    clipping, and learning rate scheduling. It also monitors the training and validation losses and implements early 
+    stopping when validation loss stops improving.
 
-    Returns:
-        - losses_list (dict): A dictionary that contains the training and validation losses per evaluation step.
+    Parameters
+    ----------
+    model : torch.nn.Module
+        The model to train.
+    ctx : torch.cuda.amp.autocast_mode.autocast
+        The context manager for mixed precision training.
+    optimizer : torch.optim.Optimizer
+        The optimizer to use for training.
+    scaler : torch.cuda.amp.GradScaler
+        The gradient scaler for mixed precision training.
+    dataset : torch.utils.data.Dataset
+        The dataset to use for training.
+    config : object
+        The configuration object containing various hyperparameters and settings.
+    saved_path : str, optional
+        The path where the model should be saved, defaults to "./out/transformer_state_dict.pth".
+
+    Returns
+    -------
+    dict
+        A dictionary containing the training and validation losses at each evaluation step.
     """
     raw_model = model.module if config.ddp else model # unwrap DDP container if needed
     # This is the total number of training steps,

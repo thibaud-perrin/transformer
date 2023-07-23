@@ -4,29 +4,70 @@ from torch.utils.data import Dataset, DataLoader
 
 class TranslationDataset(Dataset):
     """
-    A PyTorch Dataset class to be used in a PyTorch DataLoader to create batches.
+    Dataset for English to French translation tasks. 
 
-    Args:
-        - dataset (Dataset): a dataset from HuggingFace datasets library.
-        - tokenizer (Tokenizer): The custom tiktoken tokenizer used to encode sequences.
-        - block_size (int): The maximum sequence length for tokenization.
+    The dataset includes 'translation' field which is a dict that contains 
+    source text in English ('en') and target text in French ('fr').
+
+    Attributes
+    ----------
+    dataset : object
+        The dataset object containing translations.
+    tokenizer : object
+        The tokenizer object used for encoding the translations.
+    block_size : int
+        The maximum length of the tokenized sequences.
+
+    Methods
+    -------
+    __getitem__(index: int) -> dict:
+        Returns the tokenized input and target sequences, their corresponding masks, 
+        and the original translation for a given index.
+    __len__() -> int:
+        Returns the number of items in the dataset.
     """
 
     def __init__(self, dataset, tokenizer, block_size):
+        """
+        Initializes the TranslationDataset with the provided dataset, tokenizer, and block size.
+
+        Parameters
+        ----------
+        dataset : object
+            The dataset object containing translations.
+        tokenizer : object
+            The tokenizer object used for encoding the translations.
+        block_size : int
+            The maximum length of the tokenized sequences.
+        """
         self.dataset = dataset
         self.tokenizer = tokenizer
         self.block_size = block_size
 
     def __getitem__(self, index):
         """
-        Get a tokenized example from the dataset at the specified index.
+        Returns the tokenized input and target sequences, their corresponding masks, 
+        and the original translation for a given index.
 
-        Args:
-            - index (int): the index of the example to fetch.
+        Parameters
+        ----------
+        index : int
+            The index of the desired item in the dataset.
 
-        Returns:
-            - Dict: dictionary with keys 'inputs', 'inputs_mask', 'targets' , 'targets_mask' and 'translation', containing tokenized input,
-            target sequences and original translation.
+        Returns
+        -------
+        dict
+            A dictionary containing the following:
+                inputs : tensor
+                    The tokenized source sequence.
+                inputs_mask : tensor
+                    The mask of the source sequence.
+                targets : tensor
+                    The tokenized target sequence.
+                targets_mask : tensor
+                    The mask of the target sequence.
+                translation : dict
+                    The original translation dict.
         """
         translation = self.dataset[index]['translation']
         encode = self.tokenizer.encoder.encode
@@ -44,26 +85,65 @@ class TranslationDataset(Dataset):
 
     def __len__(self) -> int :
         """
-        Returns the length of the dataset.
+        Returns the number of items in the dataset.
 
-        Returns:
-            - int: the length of the dataset.
+        Returns
+        -------
+        int
+            The number of items in the dataset.
         """
         return self.dataset.num_rows
 
 
 class DataLoaderFactory():
     """
-    A class to instantiate PyTorch DataLoaders for different splits of a HuggingFace Dataset.
+    Factory class to create dataloaders for training, validation, and testing datasets.
 
-    Args:
-        - block_size (int): The maximum sequence length for tokenization.
-        - batch_size (int): The batch size for DataLoader.
-        - tokenizer (Tokenizer): a tokenizer that has an encode method.
-        - device (str): 'cpu' or 'cuda', depending on whether we use CPU or GPU.
+    It initializes the datasets and dataloaders for the given block size, batch size, 
+    tokenizer, and device. The dataloaders can be accessed directly through the 
+    corresponding attributes.
+
+    Attributes
+    ----------
+    train_data : TranslationDataset
+        The training dataset.
+    val_data : TranslationDataset
+        The validation dataset.
+    test_data : TranslationDataset
+        The testing dataset.
+    dataloader_train : torch.utils.data.DataLoader
+        Dataloader for the training dataset.
+    dataloader_val : torch.utils.data.DataLoader
+        Dataloader for the validation dataset.
+    dataloader_test : torch.utils.data.DataLoader
+        Dataloader for the testing dataset.
+
+    Methods
+    -------
+    __len__() -> int:
+        Prints and returns the number of items in each dataset and total.
+    get_batch(split: str) -> dict:
+        Returns a generator that iterates over the batches in the specified split.
     """
 
     def __init__(self, block_size, batch_size, tokenizer, device, train_dataset_size = 5_000_000):
+        """
+        Initializes the DataLoaderFactory with the provided block size, batch size, 
+        tokenizer, device, and training dataset size.
+
+        Parameters
+        ----------
+        block_size : int
+            The maximum length of the tokenized sequences.
+        batch_size : int
+            The size of the batches.
+        tokenizer : object
+            The tokenizer object used for encoding the translations.
+        device : torch.device
+            The device where the tensors will be stored.
+        train_dataset_size : int, optional
+            The size of the training dataset. Default is 5,000,000.
+        """
         self.train_data = TranslationDataset(load_dataset("wmt14", "fr-en", split=f"train[:{train_dataset_size}]"), tokenizer, block_size)
         self.val_data = TranslationDataset(load_dataset("wmt14", "fr-en", split="validation"), tokenizer, block_size)
         self.test_data = TranslationDataset(load_dataset("wmt14", "fr-en", split="test"), tokenizer, block_size)
@@ -80,10 +160,12 @@ class DataLoaderFactory():
     
     def __len__(self) -> int :
         """
-        Print the length of each dataset and returns the length of all datasets.
+        Prints and returns the number of items in each dataset and total.
 
-        Returns:
-            - int: the length of all dataset (train + val + test).
+        Returns
+        -------
+        int
+            The total number of items in all datasets.
         """
         print("\033[95m\033[1m\033[4mNumber of data by datasets splits\033[0m")
         print(f"Train\t\t: {len(self.train_data)}\t-> {len(self.train_data)/self.batch_size}")
@@ -95,14 +177,18 @@ class DataLoaderFactory():
 
     def get_batch(self, split):
         """
-        Choose the correct DataLoader and yield batches from it.
+        Returns a generator that iterates over the batches in the specified split.
 
-        Args:
-            - split (str): 'train', 'val' or 'test'.
+        Parameters
+        ----------
+        split : str
+            The split to use. Must be one of 'train', 'val', or 'test'.
 
-        Yields:
-            - Dict: a dictionary with keys 'inputs', 'targets' and 'translation', containing a batch of tokenized input,
-            target sequences and original translation.
+        Yields
+        ------
+        dict
+            The next batch in the specified split. Each batch is a dictionary that 
+            contains tensors moved to the specified device and the 'translation' field.
         """
         # choose the correct dataloader
         if split == 'train':

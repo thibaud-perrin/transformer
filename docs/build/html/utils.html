@@ -40,17 +40,39 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="utils.estimate_loss.estimate_loss">
 <span class="sig-prename descclassname"><span class="pre">utils.estimate_loss.</span></span><span class="sig-name descname"><span class="pre">estimate_loss</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">splits</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">['train',</span> <span class="pre">'val']</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.estimate_loss.estimate_loss" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function estimates the loss of a model on specified data splits without performing backpropagation.
-It sets the model to evaluation mode, iterates over the data splits and calculates the average loss.</p>
+<dd><p>Estimates the average loss for the provided model on the given data splits.</p>
+<p>This function puts the model into evaluation mode, then iteratively samples 
+batches from the dataset and computes the loss for each split. The function 
+returns a dictionary containing the average loss for each data split.</p>
+<section id="parameters">
+<h3>Parameters<a class="headerlink" href="#parameters" title="Permalink to this heading">¶</a></h3>
 <dl class="simple">
-<dt>Args:</dt><dd><p>model (Transformer): The model for which loss needs to be estimated.
-dataset (CustomDataset): The dataset used for estimation. It should provide a ‘get_batch’ method.
-config (Config): The configuration object defining the number of evaluation iterations.
-splits (list[str]): List of the names of data splits to use for estimation.</p>
+<dt>model<span class="classifier">torch.nn.Module</span></dt><dd><p>The model for which the loss is to be estimated.</p>
 </dd>
-<dt>Returns:</dt><dd><p>out (dict): A dictionary with split names as keys and corresponding average loss as values.</p>
+<dt>ctx<span class="classifier">contextlib._GeneratorContextManager</span></dt><dd><p>The context manager for gradient computation. This is typically the 
+result of a torch.no_grad() or torch.enable_grad() context.</p>
+</dd>
+<dt>dataset<span class="classifier">object</span></dt><dd><p>The dataset object, which should have a get_batch() method for obtaining
+batches of data.</p>
+</dd>
+<dt>config<span class="classifier">object</span></dt><dd><dl class="simple">
+<dt>The configuration object. It should have the following attributes:</dt><dd><p>eval_iters (int): The number of iterations to perform for each split.</p>
 </dd>
 </dl>
+</dd>
+<dt>splits<span class="classifier">list, optional</span></dt><dd><p>The list of data splits for which the loss should be estimated. The 
+default is [‘train’, ‘val’].</p>
+</dd>
+</dl>
+</section>
+<section id="returns">
+<h3>Returns<a class="headerlink" href="#returns" title="Permalink to this heading">¶</a></h3>
+<dl class="simple">
+<dt>dict</dt><dd><p>A dictionary where the keys are the names of the data splits and the 
+values are the estimated average losses for those splits.</p>
+</dd>
+</dl>
+</section>
 </dd></dl>
 
 </section>
@@ -59,13 +81,31 @@ splits (list[str]): List of the names of data splits to use for estimation.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="utils.plot_losses.plot_losses">
 <span class="sig-prename descclassname"><span class="pre">utils.plot_losses.</span></span><span class="sig-name descname"><span class="pre">plot_losses</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">losses</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xlim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ylim</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.plot_losses.plot_losses" title="Permalink to this definition">¶</a></dt>
-<dd><p>Plots the losses for training and validation with more vibrant colors on a black background.</p>
+<dd><p>Plots the training and validation losses per epoch on a black background with vibrant colors.</p>
+<p>The function creates a line plot with two lines - one for the training loss and one for the 
+validation loss. The x-axis represents the epoch number and the y-axis represents the loss.
+The function allows to manually set the x and y limits of the plot.</p>
+<section id="id1">
+<h3>Parameters<a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h3>
 <dl class="simple">
-<dt>Args:</dt><dd><ul class="simple">
-<li><p>losses (dict): A dictionary containing ‘train’ and ‘val’ lists with losses recorded for each epoch.</p></li>
-</ul>
+<dt>losses<span class="classifier">dict</span></dt><dd><p>A dictionary containing ‘train’ and ‘val’ lists. These lists should contain the recorded 
+losses for each epoch during training and validation, respectively.</p>
+</dd>
+<dt>xlim<span class="classifier">tuple, optional</span></dt><dd><p>A tuple of two integers specifying the minimum and maximum x-values to be plotted on the 
+graph. If None, the x-axis limits will be determined automatically.</p>
+</dd>
+<dt>ylim<span class="classifier">tuple, optional</span></dt><dd><p>A tuple of two integers specifying the minimum and maximum y-values to be plotted on the 
+graph. If None, the y-axis limits will be determined automatically.</p>
 </dd>
 </dl>
+</section>
+<section id="id2">
+<h3>Returns<a class="headerlink" href="#id2" title="Permalink to this heading">¶</a></h3>
+<dl class="simple">
+<dt>None</dt><dd><p>The function doesn’t return a value. It displays a matplotlib plot.</p>
+</dd>
+</dl>
+</section>
 </dd></dl>
 
 </section>
@@ -74,27 +114,63 @@ splits (list[str]): List of the names of data splits to use for estimation.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="utils.training_loop.get_linear_schedule_with_warmup">
 <span class="sig-prename descclassname"><span class="pre">utils.training_loop.</span></span><span class="sig-name descname"><span class="pre">get_linear_schedule_with_warmup</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">optimizer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_warmup_steps</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_training_steps</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.training_loop.get_linear_schedule_with_warmup" title="Permalink to this definition">¶</a></dt>
-<dd><p>“warm-up, then decay” strategy.</p>
+<dd><p>Creates a learning rate scheduler for training Transformers.</p>
+<p>This scheduler first warms up the learning rate linearly for a given number of steps, and then decays the learning 
+rate linearly to 0 for the rest of the training steps.</p>
+<section id="id3">
+<h3>Parameters<a class="headerlink" href="#id3" title="Permalink to this heading">¶</a></h3>
+<dl class="simple">
+<dt>optimizer<span class="classifier">torch.optim.Optimizer</span></dt><dd><p>The optimizer for which to schedule the learning rate.</p>
+</dd>
+<dt>num_warmup_steps<span class="classifier">int</span></dt><dd><p>The number of steps for the warmup phase.</p>
+</dd>
+<dt>num_training_steps<span class="classifier">int</span></dt><dd><p>The total number of training steps.</p>
+</dd>
+</dl>
+</section>
+<section id="id4">
+<h3>Returns<a class="headerlink" href="#id4" title="Permalink to this heading">¶</a></h3>
+<dl class="simple">
+<dt>torch.optim.lr_scheduler.LambdaLR</dt><dd><p>A learning rate scheduler that adjusts the learning rate of the optimizer according to the warm-up and decay 
+strategy.</p>
+</dd>
+</dl>
+</section>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="utils.training_loop.training_loop">
 <span class="sig-prename descclassname"><span class="pre">utils.training_loop.</span></span><span class="sig-name descname"><span class="pre">training_loop</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ctx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scaler</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">config</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">saved_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'./out/transformer_state_dict.pth'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.training_loop.training_loop" title="Permalink to this definition">¶</a></dt>
-<dd><p>This function performs the training loop for the given transformer model. It trains the model using the provided 
-optimizer and dataset according to the specified configuration.</p>
+<dd><p>Performs the training loop for the given transformer model using the provided optimizer and dataset.</p>
+<p>This function trains the model for a specified number of epochs, and implements gradient accumulation, gradient 
+clipping, and learning rate scheduling. It also monitors the training and validation losses and implements early 
+stopping when validation loss stops improving.</p>
+<section id="id5">
+<h3>Parameters<a class="headerlink" href="#id5" title="Permalink to this heading">¶</a></h3>
 <dl class="simple">
-<dt>Args:</dt><dd><ul class="simple">
-<li><p>model (Transformer): The transformer model to be trained.</p></li>
-<li><p>optimizer (torch.optim.Optimizer): The optimizer used to update the model’s parameters.</p></li>
-<li><p>dataset (CustomDataset): The dataset used for training and validation. It should provide a ‘get_batch’ method.</p></li>
-<li><p>config (Config): The configuration object that defines parameters like max_iters.</p></li>
-</ul>
+<dt>model<span class="classifier">torch.nn.Module</span></dt><dd><p>The model to train.</p>
 </dd>
-<dt>Returns:</dt><dd><ul class="simple">
-<li><p>losses_list (dict): A dictionary that contains the training and validation losses per evaluation step.</p></li>
-</ul>
+<dt>ctx<span class="classifier">torch.cuda.amp.autocast_mode.autocast</span></dt><dd><p>The context manager for mixed precision training.</p>
+</dd>
+<dt>optimizer<span class="classifier">torch.optim.Optimizer</span></dt><dd><p>The optimizer to use for training.</p>
+</dd>
+<dt>scaler<span class="classifier">torch.cuda.amp.GradScaler</span></dt><dd><p>The gradient scaler for mixed precision training.</p>
+</dd>
+<dt>dataset<span class="classifier">torch.utils.data.Dataset</span></dt><dd><p>The dataset to use for training.</p>
+</dd>
+<dt>config<span class="classifier">object</span></dt><dd><p>The configuration object containing various hyperparameters and settings.</p>
+</dd>
+<dt>saved_path<span class="classifier">str, optional</span></dt><dd><p>The path where the model should be saved, defaults to “./out/transformer_state_dict.pth”.</p>
 </dd>
 </dl>
+</section>
+<section id="id6">
+<h3>Returns<a class="headerlink" href="#id6" title="Permalink to this heading">¶</a></h3>
+<dl class="simple">
+<dt>dict</dt><dd><p>A dictionary containing the training and validation losses at each evaluation step.</p>
+</dd>
+</dl>
+</section>
 </dd></dl>
 
 </section>

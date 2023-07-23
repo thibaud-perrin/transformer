@@ -7,20 +7,54 @@ from . import Encoder, Decoder
 
 class Transformer(nn.Module):
     """
-    This class implements the Transformer model, which includes both the encoder and decoder.
+    A PyTorch implementation of a Transformer model.
+    
+    The Transformer model consists of an Encoder and a Decoder. 
+    It supports functionalities like forward pass, token generation, optimizer configuration,
+    and save/load model state.
+    
+    Attributes
+    ----------
+    config : object
+        A configuration object with necessary attributes for Transformer model.
+    encoder : Encoder
+        The encoder part of the Transformer model.
+    decoder : Decoder
+        The decoder part of the Transformer model.
 
-    The Transformer is a sequence transduction model that uses attention mechanisms.
-    It is primarily used in tasks that require understanding of context or relationships among words in a text.
+    Methods
+    -------
+    forward(src, tgt, src_mask=None, tgt_mask=None):
+        Implements the forward pass of the Transformer model and returns the output and loss.
+    generate(src, idx, src_mask=None, max_new_tokens=128, temperature=1.0, top_k=None):
+        Generates new tokens given a source tensor.
+    configure_optimizers(weight_decay, learning_rate, betas, device_type, eps):
+        Configures the AdamW optimizer for the Transformer model.
+    save_model(path: str):
+        Saves the model state to the given file path.
+    load_model(path: str):
+        Loads the model state from the given file path.
 
-    Attributes:
-        - encoder (Encoder): The transformer encoder.
-        - decoder (Decoder): The transformer decoder.
-        - config (:obj:`Config`): The configuration object for the transformer model.
-
-    Args:
-        - config (:obj:`Config`): The configuration object with attributes such as `vocab_size`, `block_size`, `n_embd`, `dropout`, `n_layer`, and `bias`.
+    Parameters
+    ----------
+    config : object
+        A configuration object with necessary parameters for Transformer model. It includes:
+            vocab_size (int): The size of vocabulary.
+            block_size (int): The size of a block for Transformer.
+            PAD_IDX (int): The index representing padding in token sequence.
     """
     def __init__(self, config):
+        """
+        Initializes the Transformer model with the given configuration.
+        
+        Parameters
+        ----------
+        config : object
+            A configuration object with necessary parameters for Transformer model. It includes:
+                vocab_size (int): The size of vocabulary.
+                block_size (int): The size of a block for Transformer.
+                PAD_IDX (int): The index representing padding in token sequence.
+        """
         super().__init__()
         assert config.vocab_size is not None
         assert config.block_size is not None
@@ -34,17 +68,23 @@ class Transformer(nn.Module):
 
     def forward(self, src, tgt, src_mask=None, tgt_mask=None):
         """
-        Defines the computation performed at every call.
-
-        Args:
-            - src (torch.Tensor): The input tensor to the encoder.
-            - tgt (torch.Tensor): The input tensor to the decoder.
-            - src_mask (torch.Tensor): The input_mask tensor to the encoder, size (B, 1, 1, T).
-            - tgt_mask (torch.Tensor): The target_masks tensor to the decoder, size (B, 1, 1, T).
-
-        Returns:
-            - torch.Tensor: The output tensor (logits) of the model.
-            - torch.Tensor: The loss tensor calculated on the basis of the decoder's output and target tensor.
+        Implements the forward pass of the Transformer model.
+        
+        Parameters
+        ----------
+        src : torch.Tensor
+            The input tensor for the source sequence.
+        tgt : torch.Tensor
+            The input tensor for the target sequence.
+        src_mask : torch.Tensor, optional
+            The input tensor for source sequence masking.
+        tgt_mask : torch.Tensor, optional
+            The input tensor for target sequence masking.
+        
+        Returns
+        -------
+        torch.Tensor, torch.Tensor
+            The output tensor post-processed by the Transformer model and the calculated loss.
         """
         assert src.dim() == 2 and tgt.dim() == 2, "src and tgt should be 2D (B, S)"
         if src_mask is not None:
@@ -71,7 +111,29 @@ class Transformer(nn.Module):
 
     @torch.no_grad()
     def generate(self, src, idx, src_mask=None, max_new_tokens=128, temperature=1.0, top_k=None):
+        """
+        Generates new tokens given a source tensor.
         
+        Parameters
+        ----------
+        src : torch.Tensor
+            The input tensor for the source sequence.
+        idx : torch.Tensor
+            The input tensor with indices in the current context.
+        src_mask : torch.Tensor, optional
+            The input tensor for source sequence masking.
+        max_new_tokens : int, optional
+            The maximum number of new tokens to be generated.
+        temperature : float, optional
+            The softmax temperature for controlling the randomness of predictions.
+        top_k : int, optional
+            The number of highest probability vocabulary tokens to keep for next step prediction.
+        
+        Returns
+        -------
+        torch.Tensor, dict
+            The tensor with new generated token indices and a dictionary with attentions.
+        """
         enc_output, encoder_attn = self.encoder(src, src_mask)
         
         # idx is (B, T) array of indices in the current context
@@ -95,6 +157,27 @@ class Transformer(nn.Module):
         return idx, dict(encoder_attn=encoder_attn, decoder_attn=dec_attention, cross_attn=cross_attention)
         
     def configure_optimizers(self, weight_decay, learning_rate, betas, device_type, eps):
+        """
+        Configures the AdamW optimizer for the Transformer model.
+        
+        Parameters
+        ----------
+        weight_decay : float
+            The L2 penalty (regularization) coefficient.
+        learning_rate : float
+            The learning rate for AdamW optimizer.
+        betas : tuple(float, float)
+            Coefficients used for computing running averages of gradient and its square.
+        device_type : str
+            The device type for the optimizer, either "cpu" or "cuda".
+        eps : float
+            A term added to the denominator to improve numerical stability.
+        
+        Returns
+        -------
+        torch.optim.AdamW
+            The AdamW optimizer configured for the Transformer model.
+        """
         # start with all of the candidate parameters
         param_dict = {pn: p for pn, p in self.named_parameters()}
         # filter out those that do not require grad
@@ -117,22 +200,23 @@ class Transformer(nn.Module):
 
     def save_model(self, path: str):
         """
-        Saves the current state of the model to a file.
-
-        Args:
-            path (str): The path to the file where the model state should be saved.
+        Saves the model state to the given file path.
+        
+        Parameters
+        ----------
+        path : str
+            The file path where the model state is to be saved.
         """
         torch.save(self.state_dict(), path)
 
     def load_model(self, path: str):
         """
-        Loads the model state from a file.
-
-        Args:
-            path (str): The path to the file from where the model state should be loaded.
-
-        Raises:
-            ValueError: If the specified file does not exist.
+        Loads the model state from the given file path.
+        
+        Parameters
+        ----------
+        path : str
+            The file path from where the model state is to be loaded.
         """
         if not os.path.exists(path):
             raise ValueError(f"{path} does not exist.")

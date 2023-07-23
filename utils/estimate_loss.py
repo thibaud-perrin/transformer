@@ -4,17 +4,34 @@ from tqdm.notebook import tqdm
 @torch.no_grad()
 def estimate_loss(model, ctx, dataset, config, splits = ['train', 'val']):
     """
-    This function estimates the loss of a model on specified data splits without performing backpropagation.
-    It sets the model to evaluation mode, iterates over the data splits and calculates the average loss.
+    Estimates the average loss for the provided model on the given data splits.
 
-    Args:
-        model (Transformer): The model for which loss needs to be estimated.
-        dataset (CustomDataset): The dataset used for estimation. It should provide a 'get_batch' method.
-        config (Config): The configuration object defining the number of evaluation iterations.
-        splits (list[str]): List of the names of data splits to use for estimation.
+    This function puts the model into evaluation mode, then iteratively samples 
+    batches from the dataset and computes the loss for each split. The function 
+    returns a dictionary containing the average loss for each data split.
 
-    Returns:
-        out (dict): A dictionary with split names as keys and corresponding average loss as values.
+    Parameters
+    ----------
+    model : torch.nn.Module
+        The model for which the loss is to be estimated.
+    ctx : contextlib._GeneratorContextManager
+        The context manager for gradient computation. This is typically the 
+        result of a torch.no_grad() or torch.enable_grad() context.
+    dataset : object
+        The dataset object, which should have a get_batch() method for obtaining
+        batches of data.
+    config : object
+        The configuration object. It should have the following attributes:
+            eval_iters (int): The number of iterations to perform for each split.
+    splits : list, optional
+        The list of data splits for which the loss should be estimated. The 
+        default is ['train', 'val'].
+
+    Returns
+    -------
+    dict
+        A dictionary where the keys are the names of the data splits and the 
+        values are the estimated average losses for those splits.
     """
     # Create an empty dictionary to store the average loss for each split
     out = {}
