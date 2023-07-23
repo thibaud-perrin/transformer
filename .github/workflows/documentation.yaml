@@ -19,6 +19,8 @@ jobs:
         working-directory: ./docs
         run: |
           make html
+          ls
+          ls /build
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
