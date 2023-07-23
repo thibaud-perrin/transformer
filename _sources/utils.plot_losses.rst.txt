@@ -1,0 +1,5 @@
+plot_losses Class
+=================
+
+.. autoclass:: utils.plot_losses
+   :members:

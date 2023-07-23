@@ -1,0 +1,9 @@
+Blocks
+======
+This module contains the different building blocks used in the Transformers project.
+
+.. automodule:: transformers.Blocks.LayersFeedForward
+   :members:
+
+.. automodule:: transformers.Blocks.DecoderBlock
+   :members:

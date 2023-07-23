@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>LayerNorm Class &#8212; Transformer v1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Tokenizer Class" href="utils.Tokenizer.html" />
+    <link rel="prev" title="Welcome to Transformer’s documentation!" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="layernorm-class">
+<h1>LayerNorm Class<a class="headerlink" href="#layernorm-class" title="Permalink to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="utils.LayerNorm">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">LayerNorm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ndim</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.LayerNorm" title="Permalink to this definition">¶</a></dt>
+<dd><p>A Layer Normalization module with optional bias.</p>
+<p>This implementation of Layer Normalization allows turning off the bias term,
+which is not directly supported by PyTorch’s layer normalization function.</p>
+<dl>
+<dt>Attributes:</dt><dd><p>weight: Learnable weights for the layer normalization. Initialized as an all ones tensor.
+bias: Learnable biases for the layer normalization. Initialized as an all zeros tensor</p>
+<blockquote>
+<div><p>if bias argument in constructor is True, otherwise it’s set to None.</p>
+</div></blockquote>
+</dd>
+<dt>Args:</dt><dd><p>ndim: An integer for the dimension of the input vectors.
+bias: A boolean which, if True, adds a learnable bias to the output.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="utils.LayerNorm.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.LayerNorm.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>input (tensor): The input tensor to be normalized.</p>
+</dd>
+<dt>Returns:</dt><dd><p>tensor: The normalized input tensor.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Transformer</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">LayerNorm Class</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#utils.LayerNorm"><code class="docutils literal notranslate"><span class="pre">LayerNorm</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="utils.Tokenizer.html">Tokenizer Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.TransformerConfig.html">TransformerConfig Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.DataLoaderFactory.html">DataLoaderFactory Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.MultiHeadAttention.html">MultiHeadAttention Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.FeedForward.html">FeedForward Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.EncoderBlock.html">EncoderBlock Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.DecoderBlock.html">DecoderBlock Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.Encoder.html">Encoder Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.Decoder.html">Decoder Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.Transformer.html">Transformer Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.estimate_loss.html">estimate_loss Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.plot_losses.html">plot_losses Class</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Welcome to Transformer’s documentation!</a></li>
+      <li>Next: <a href="utils.Tokenizer.html" title="next chapter">Tokenizer Class</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2023, Thibaud Perrin.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.0.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
+      
+      |
+      <a href="_sources/utils.LayerNorm.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

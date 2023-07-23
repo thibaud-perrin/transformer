@@ -1,0 +1,230 @@
+
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>transformer &#8212; Transformer v1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="transformer_implementation package" href="transformer_implementation.html" />
+    <link rel="prev" title="Welcome to Transformer’s documentation!" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="transformer">
+<h1>transformer<a class="headerlink" href="#transformer" title="Permalink to this heading">¶</a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="transformer_implementation.html">transformer_implementation package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="transformer_implementation.html#subpackages">Subpackages</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="transformer_implementation.blocks.html">transformer_implementation.blocks package</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="transformer_implementation.blocks.html#subpackages">Subpackages</a></li>
+<li class="toctree-l4"><a class="reference internal" href="transformer_implementation.blocks.html#submodules">Submodules</a></li>
+<li class="toctree-l4"><a class="reference internal" href="transformer_implementation.blocks.html#module-transformer_implementation.blocks.DecoderBlock">transformer_implementation.blocks.DecoderBlock module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="transformer_implementation.blocks.html#module-transformer_implementation.blocks.EncoderBlock">transformer_implementation.blocks.EncoderBlock module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="transformer_implementation.blocks.html#module-transformer_implementation.blocks">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="transformer_implementation.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="transformer_implementation.html#module-transformer_implementation.DataLoaderFactory">transformer_implementation.DataLoaderFactory module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.DataLoaderFactory.DataLoaderFactory"><code class="docutils literal notranslate"><span class="pre">DataLoaderFactory</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.DataLoaderFactory.DataLoaderFactory.get_batch"><code class="docutils literal notranslate"><span class="pre">DataLoaderFactory.get_batch()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.DataLoaderFactory.TranslationDataset"><code class="docutils literal notranslate"><span class="pre">TranslationDataset</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="transformer_implementation.html#module-transformer_implementation.Decoder">transformer_implementation.Decoder module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.Decoder.Decoder"><code class="docutils literal notranslate"><span class="pre">Decoder</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.Decoder.Decoder.forward"><code class="docutils literal notranslate"><span class="pre">Decoder.forward()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.Decoder.Decoder.get_num_params"><code class="docutils literal notranslate"><span class="pre">Decoder.get_num_params()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="transformer_implementation.html#module-transformer_implementation.Encoder">transformer_implementation.Encoder module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.Encoder.Encoder"><code class="docutils literal notranslate"><span class="pre">Encoder</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.Encoder.Encoder.forward"><code class="docutils literal notranslate"><span class="pre">Encoder.forward()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.Encoder.Encoder.get_num_params"><code class="docutils literal notranslate"><span class="pre">Encoder.get_num_params()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="transformer_implementation.html#module-transformer_implementation.Tokenizer">transformer_implementation.Tokenizer module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.Tokenizer.Tokenizer"><code class="docutils literal notranslate"><span class="pre">Tokenizer</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.Tokenizer.Tokenizer.generate_padding_mask"><code class="docutils literal notranslate"><span class="pre">Tokenizer.generate_padding_mask()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.Tokenizer.Tokenizer.sequence_cleaner"><code class="docutils literal notranslate"><span class="pre">Tokenizer.sequence_cleaner()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.Tokenizer.Tokenizer.sequence_padding"><code class="docutils literal notranslate"><span class="pre">Tokenizer.sequence_padding()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.Tokenizer.Tokenizer.tokenize"><code class="docutils literal notranslate"><span class="pre">Tokenizer.tokenize()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.Tokenizer.Tokenizer.tokenize_from_str"><code class="docutils literal notranslate"><span class="pre">Tokenizer.tokenize_from_str()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.Tokenizer.Tokenizer.vocab_size"><code class="docutils literal notranslate"><span class="pre">Tokenizer.vocab_size()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="transformer_implementation.html#module-transformer_implementation.Transformer">transformer_implementation.Transformer module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.Transformer.Transformer"><code class="docutils literal notranslate"><span class="pre">Transformer</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.Transformer.Transformer.configure_optimizers"><code class="docutils literal notranslate"><span class="pre">Transformer.configure_optimizers()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.Transformer.Transformer.forward"><code class="docutils literal notranslate"><span class="pre">Transformer.forward()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.Transformer.Transformer.generate"><code class="docutils literal notranslate"><span class="pre">Transformer.generate()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.Transformer.Transformer.load_model"><code class="docutils literal notranslate"><span class="pre">Transformer.load_model()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.Transformer.Transformer.save_model"><code class="docutils literal notranslate"><span class="pre">Transformer.save_model()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="transformer_implementation.html#module-transformer_implementation.TransformerConfig">transformer_implementation.TransformerConfig module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.TransformerConfig.TransformerConfig"><code class="docutils literal notranslate"><span class="pre">TransformerConfig</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.TransformerConfig.TransformerConfig.BOS_IDX"><code class="docutils literal notranslate"><span class="pre">TransformerConfig.BOS_IDX</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.TransformerConfig.TransformerConfig.EOS_IDX"><code class="docutils literal notranslate"><span class="pre">TransformerConfig.EOS_IDX</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.TransformerConfig.TransformerConfig.PAD_IDX"><code class="docutils literal notranslate"><span class="pre">TransformerConfig.PAD_IDX</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.TransformerConfig.TransformerConfig.backend"><code class="docutils literal notranslate"><span class="pre">TransformerConfig.backend</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.TransformerConfig.TransformerConfig.batch_size"><code class="docutils literal notranslate"><span class="pre">TransformerConfig.batch_size</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.TransformerConfig.TransformerConfig.beta1"><code class="docutils literal notranslate"><span class="pre">TransformerConfig.beta1</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.TransformerConfig.TransformerConfig.beta2"><code class="docutils literal notranslate"><span class="pre">TransformerConfig.beta2</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.TransformerConfig.TransformerConfig.bias"><code class="docutils literal notranslate"><span class="pre">TransformerConfig.bias</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.TransformerConfig.TransformerConfig.block_size"><code class="docutils literal notranslate"><span class="pre">TransformerConfig.block_size</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.TransformerConfig.TransformerConfig.compile"><code class="docutils literal notranslate"><span class="pre">TransformerConfig.compile</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.TransformerConfig.TransformerConfig.ddp"><code class="docutils literal notranslate"><span class="pre">TransformerConfig.ddp</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.TransformerConfig.TransformerConfig.device"><code class="docutils literal notranslate"><span class="pre">TransformerConfig.device</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.TransformerConfig.TransformerConfig.device_type"><code class="docutils literal notranslate"><span class="pre">TransformerConfig.device_type</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.TransformerConfig.TransformerConfig.dropout"><code class="docutils literal notranslate"><span class="pre">TransformerConfig.dropout</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.TransformerConfig.TransformerConfig.dtype"><code class="docutils literal notranslate"><span class="pre">TransformerConfig.dtype</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.TransformerConfig.TransformerConfig.eps"><code class="docutils literal notranslate"><span class="pre">TransformerConfig.eps</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.TransformerConfig.TransformerConfig.eval_iters"><code class="docutils literal notranslate"><span class="pre">TransformerConfig.eval_iters</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.TransformerConfig.TransformerConfig.grad_accumulation_steps"><code class="docutils literal notranslate"><span class="pre">TransformerConfig.grad_accumulation_steps</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.TransformerConfig.TransformerConfig.learning_rate"><code class="docutils literal notranslate"><span class="pre">TransformerConfig.learning_rate</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.TransformerConfig.TransformerConfig.max_epochs"><code class="docutils literal notranslate"><span class="pre">TransformerConfig.max_epochs</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.TransformerConfig.TransformerConfig.max_iters"><code class="docutils literal notranslate"><span class="pre">TransformerConfig.max_iters</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.TransformerConfig.TransformerConfig.n_embd"><code class="docutils literal notranslate"><span class="pre">TransformerConfig.n_embd</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.TransformerConfig.TransformerConfig.n_head"><code class="docutils literal notranslate"><span class="pre">TransformerConfig.n_head</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.TransformerConfig.TransformerConfig.n_layer"><code class="docutils literal notranslate"><span class="pre">TransformerConfig.n_layer</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.TransformerConfig.TransformerConfig.train_data_size"><code class="docutils literal notranslate"><span class="pre">TransformerConfig.train_data_size</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.TransformerConfig.TransformerConfig.vocab_size"><code class="docutils literal notranslate"><span class="pre">TransformerConfig.vocab_size</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="transformer_implementation.html#transformer_implementation.TransformerConfig.TransformerConfig.weight_decay"><code class="docutils literal notranslate"><span class="pre">TransformerConfig.weight_decay</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="transformer_implementation.html#module-transformer_implementation">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="utils.html">utils package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#module-utils.estimate_loss">utils.estimate_loss module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="utils.html#utils.estimate_loss.estimate_loss"><code class="docutils literal notranslate"><span class="pre">estimate_loss()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#module-utils.plot_losses">utils.plot_losses module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="utils.html#utils.plot_losses.plot_losses"><code class="docutils literal notranslate"><span class="pre">plot_losses()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#module-utils.training_loop">utils.training_loop module</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="utils.html#utils.training_loop.get_linear_schedule_with_warmup"><code class="docutils literal notranslate"><span class="pre">get_linear_schedule_with_warmup()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="utils.html#utils.training_loop.training_loop"><code class="docutils literal notranslate"><span class="pre">training_loop()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html#module-utils">Module contents</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Transformer</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">transformer</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="transformer_implementation.html">transformer_implementation package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="utils.html">utils package</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Welcome to Transformer’s documentation!</a></li>
+      <li>Next: <a href="transformer_implementation.html" title="next chapter">transformer_implementation package</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2023, Thibaud Perrin.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 6.2.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
+      
+      |
+      <a href="_sources/modules.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

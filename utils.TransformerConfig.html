@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>TransformerConfig Class &#8212; Transformer v1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/sphinx_highlight.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="DataLoaderFactory Class" href="utils.DataLoaderFactory.html" />
+    <link rel="prev" title="Tokenizer Class" href="utils.Tokenizer.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="transformerconfig-class">
+<h1>TransformerConfig Class<a class="headerlink" href="#transformerconfig-class" title="Permalink to this heading">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="utils.TransformerConfig">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">utils.</span></span><span class="sig-name descname"><span class="pre">TransformerConfig</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">tokenizer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">any</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">block_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">256</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">batch_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">12</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_layer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_head</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_embd</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">256</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bias</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_iters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eval_interval</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">200</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eval_iters</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">visualize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#utils.TransformerConfig" title="Permalink to this definition">¶</a></dt>
+<dd><p>Data class that stores the configuration for a Transformer model.</p>
+<dl class="simple">
+<dt>Attributes:</dt><dd><ul class="simple">
+<li><p>tokenizer: An instance of the Tokenizer class.</p></li>
+<li><p>block_size (int): Number of tokens in each sequence. Defaults to 512.</p></li>
+<li><p>batch_size (int): Number of sequences in each batch. Defaults to 12.</p></li>
+<li><p>vocab_size (int): Total size of the tokenizer vocabulary. It is set to the size of the tokenizer vocabulary.</p></li>
+<li><p>n_layer (int): Number of transformer encoder and decoder blocks (N). Defaults to 1.</p></li>
+<li><p>n_head (int): Number of heads in each attention block. Defaults to 2.</p></li>
+<li><p>n_embd (int): Token embedding size. This is from the original Transformer paper. Defaults to 128.</p></li>
+<li><p>dropout (float): Dropout rate to use in the Transformer model. Defaults to 0.1.</p></li>
+<li><dl class="simple">
+<dt>bias (bool): Indicates whether to use bias in Linears and LayerNorms.</dt><dd><p>If True, bias is used similar to GPT-2.
+If False, it is a bit better and faster. Defaults to False.</p>
+</dd>
+</dl>
+</li>
+<li><p>device (str): The device to run the model on. Defaults to ‘cpu’. ‘cuda’ is used if a GPU is available.</p></li>
+<li><p>learning_rate (float): Learning rate for the model optimization. Defaults to 3e-4.</p></li>
+<li><p>max_iters (int): Number of training steps. Defaults to 20.</p></li>
+<li><p>eval_interval (int): Number of steps between each validation dataset. Defaults to 5.</p></li>
+<li><p>eval_iters (int): Number of validation epochs. Defaults to 20.</p></li>
+<li><p>visualize (bool): Define if we want to get the attention scores.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="utils.TransformerConfig.vocab_size">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">vocab_size</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">int</span></em><a class="headerlink" href="#utils.TransformerConfig.vocab_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the total size of the tokenizer vocabulary.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>int: The size of the tokenizer vocabulary.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Transformer</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="utils.LayerNorm.html">LayerNorm Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.Tokenizer.html">Tokenizer Class</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">TransformerConfig Class</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#utils.TransformerConfig"><code class="docutils literal notranslate"><span class="pre">TransformerConfig</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="utils.DataLoaderFactory.html">DataLoaderFactory Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.MultiHeadAttention.html">MultiHeadAttention Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.FeedForward.html">FeedForward Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.EncoderBlock.html">EncoderBlock Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.DecoderBlock.html">DecoderBlock Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.Encoder.html">Encoder Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.Decoder.html">Decoder Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.Transformer.html">Transformer Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.estimate_loss.html">estimate_loss Class</a></li>
+<li class="toctree-l1"><a class="reference internal" href="utils.plot_losses.html">plot_losses Class</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="utils.Tokenizer.html" title="previous chapter">Tokenizer Class</a></li>
+      <li>Next: <a href="utils.DataLoaderFactory.html" title="next chapter">DataLoaderFactory Class</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2023, Thibaud Perrin.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 7.0.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.13</a>
+      
+      |
+      <a href="_sources/utils.TransformerConfig.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
