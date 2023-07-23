@@ -50,12 +50,14 @@ class DecoderBlock(nn.Module):
         """
         # Masked MultiHeadAttention
         x = self.ln_1(x)
-        x_attn, encoder_attn = checkpoint(self.attn1, x, x, x, True, tgt_mask)
-        x = self.ln_2(x + x_attn)
+        x_attn, encoder_attn = checkpoint(self.attn1, x, x, x, tgt_mask, True)
+        
         # MultiHeadAttention with q, k from encoder and x from decoder
-        # sliced_encoder_output = encoder_output[:, :-1] if x.size(-2) != encoder_output.size(-2) else encoder_output
-        x_attn, cross_attn = checkpoint(self.attn2, x, encoder_output, encoder_output, False, src_mask)
-        x = self.ln_3(x + x_attn)
+        x = self.ln_2(x + x_attn)
+        x_attn, cross_attn = checkpoint(self.attn2, x, encoder_output, encoder_output, src_mask, False)
+        
         # FeedForward
+        x = self.ln_3(x + x_attn)
         x = x + checkpoint(self.ffw, x)
+        
         return x, encoder_attn, cross_attn

@@ -26,11 +26,6 @@ class Encoder(nn.Module):
 
         self.encoder = nn.ModuleDict(dict(
             wte = nn.Embedding(config.vocab_size, config.n_embd),
-            # Learned positional encoding:
-            # In this case, instead of using a fixed function to determine positional encoding,
-            # we initialize a tensor of positional encodings which gets updated during training via backpropagation.
-            # This method may potentially capture more complex position-related patterns than fixed positional encoding,
-            # but it also introduces additional parameters to the model.
             wpe = nn.Embedding(config.block_size, config.n_embd),
             drop = nn.Dropout(config.dropout),
             h = nn.ModuleList([EncoderBlock(config) for _ in range(config.n_layer)]),

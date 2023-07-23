@@ -14,7 +14,7 @@ def get_linear_schedule_with_warmup(optimizer, num_warmup_steps, num_training_st
 
     return LambdaLR(optimizer, lr_lambda)
 
-def training_loop(model, optimizer, dataset, config, saved_path = "./out/transformer_state_dict.pth"):
+def training_loop(model, ctx, optimizer, scaler, dataset, config, saved_path = "./out/transformer_state_dict.pth"):
     """
     This function performs the training loop for the given transformer model. It trains the model using the provided 
     optimizer and dataset according to the specified configuration. 
@@ -28,6 +28,7 @@ def training_loop(model, optimizer, dataset, config, saved_path = "./out/transfo
     Returns:
         - losses_list (dict): A dictionary that contains the training and validation losses per evaluation step.
     """
+    raw_model = model.module if config.ddp else model # unwrap DDP container if needed
     # This is the total number of training steps,
     # which is typically the number of training examples times the number of epochs.
     num_training_steps = config.train_data_size * config.max_epochs
@@ -35,7 +36,6 @@ def training_loop(model, optimizer, dataset, config, saved_path = "./out/transfo
     num_warmup_steps = num_training_steps // 100
     # You can add this after defining your optimizer
     scheduler = get_linear_schedule_with_warmup(optimizer, num_warmup_steps, num_training_steps)
-
     # Initialize a dictionary to keep track of training and validation losses
     losses_list = {
         'train': [],
@@ -49,7 +49,7 @@ def training_loop(model, optimizer, dataset, config, saved_path = "./out/transfo
     best_loss = float('inf')
     val_loss = float('inf')
     # This is the number of epochs with no improvement after which training will be stopped.
-    patience = 3
+    patience = 25
     # This is used to keep track of the number of epochs without improvement.
     patience_counter = 0
 
@@ -63,28 +63,53 @@ def training_loop(model, optimizer, dataset, config, saved_path = "./out/transfo
         batch = dataset.get_batch('train')
         for iter in iter_loop:
             # Sample a new batch of data
+            # Sample a new batch of data
             n_batch = next(batch)
             xb = n_batch['inputs']
             xb_mask = n_batch['inputs_mask']
             yb = n_batch['targets']
             yb_mask = n_batch['targets_mask']
-        
-            # Evaluate the loss
-            logits, loss = model(xb, yb, xb_mask, yb_mask)
-            # Reset gradients
-            optimizer.zero_grad(set_to_none=True)
-            # Perform backpropagation
-            loss.backward()
-            # Update the model parameters
-            optimizer.step()
-            # update sheduler
-            scheduler.step()
+
+            
+            if config.ddp:
+                # in DDP training we only need to sync gradients at the last micro step.
+                # the official way to do this is with model.no_sync() context manager, but
+                # I really dislike that this bloats the code and forces us to repeat code
+                # looking at the source of that context manager, it just toggles this variable
+                model.require_backward_grad_sync = ((iter+1) % config.grad_accumulation_steps == 0)
+            with ctx:
+                # Evaluate the loss
+                logits, loss = model(xb, yb, xb_mask, yb_mask)
+                loss = loss / config.grad_accumulation_steps # scale the loss to account for gradient accumulation
+
+            # Performs the backward pass with gradient scaling.
+            scaler.scale(loss).backward()
+
+            # Gradient Accumulation over multiple batches
+            if (iter+1) % config.grad_accumulation_steps == 0:
+                # Unscales the gradients of optimizer's assigned params in-place
+                scaler.unscale_(optimizer)
+                
+                # Since the gradients of optimizer's assigned params are unscaled, clips as usual:
+                torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+                
+                # optimizer.step() is now replaced with scaler.step(optimizer)
+                scaler.step(optimizer)
+                
+                # Updates the scale for next iteration.
+                scaler.update()
+                
+                # Don't forget to zero the grad again after performing optimizer.step()
+                optimizer.zero_grad(set_to_none=True)
+                
+                # update sheduler
+                scheduler.step()
 
         ############
         # Evaluation
         ############
         # Estimate the losses for both training and validation datasets
-        losses = estimate_loss(model, dataset, config)
+        losses = estimate_loss(model, ctx, dataset, config)
         # Return the model to training mode
         model.train()
         
@@ -101,7 +126,7 @@ def training_loop(model, optimizer, dataset, config, saved_path = "./out/transfo
         ############
         val_loss = losses['val']
         if val_loss < best_loss:
-            torch.save(model.module.state_dict(), saved_path)
+            torch.save(raw_model.state_dict(), saved_path)
             best_loss = val_loss
             patience_counter = 0
             iter_saved = epochs

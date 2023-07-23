@@ -53,100 +53,67 @@ class Transformer(nn.Module):
             assert tgt_mask.dim() == 4, "tgt_mask should be 4D (B, 1, 1 S)"
 
         enc_output, _ = self.encoder(src, src_mask)
-        tgt_shifted = tgt[:, :-1] # Shifted target
-        output, _, _ = self.decoder(tgt_shifted, enc_output, src_mask, tgt_mask[:, :, :-1, :-1])
+        
+        # Shift targets for decoder input and add padding at the end
+        tgt_shifted = F.pad(tgt[:, :-1], (0, 1), value=self.config.PAD_IDX)
+        # Shift targets for loss calculation and add padding at the end
+        tgt_shifted_for_loss = F.pad(tgt[:, 1:], (0, 1), value=self.config.PAD_IDX)
+        
+        output, _, _ = self.decoder(tgt_shifted, enc_output, src_mask, tgt_mask)
 
+        B, T, C = output.shape
+        output = output.view(B*T, C)
+        tgt_tgt = tgt_shifted_for_loss.view(B*T)
         # Calculate the loss, using both the output and the target
-        loss_fct = nn.CrossEntropyLoss(ignore_index=self.config.tokenizer.PAD_IDX) # Ignore padding tokens
-        # The targets for the loss function are the input sequences shifted
-        tgt_tgt = tgt[:, 1:].contiguous()
-        loss = loss_fct(output.view(-1, output.size(-1)), tgt_tgt.view(-1))
+        loss_fct = nn.CrossEntropyLoss(ignore_index=self.config.PAD_IDX) # Ignore padding tokens
+        loss = loss_fct(output, tgt_tgt)
         return output, loss
 
-
     @torch.no_grad()
-    def inference(self, src, src_mask=None, tgt_mask=None, max_length=20, top_p=0.95):
-        """
-        Generates a sequence translation based on the input source sequence using Top P sampling.
-
-        Args:
-            - src (torch.Tensor): The input source sequence.
-            - src_mask (torch.Tensor): The input_mask tensor to the encoder, size (B, 1, 1, T).
-            - tgt_mask (torch.Tensor): The target_masks tensor to the decoder, size (B, 1, 1, T).
-            - max_length (int): The maximum length of the generated sequence.
-            - top_p (float): The top-p probability threshold for sampling.
-            - temperature (float): The temperature value for sampling.
-
-        Returns:
-            - str: The generated sequence translation.
-        """
-        assert src.dim() == 2, "src should be 2D (B, S)"
-        if src_mask is not None:
-            assert src_mask.dim() == 4, "src_mask should be 4D (B, 1, 1, S)"
-
-        device = self.config.device
+    def generate(self, src, idx, src_mask=None, max_new_tokens=128, temperature=1.0, top_k=None):
         
         enc_output, encoder_attn = self.encoder(src, src_mask)
-
-        # Initialize the target sequence with the start token
-        output_seq = [self.config.tokenizer.BOS_IDX]
-
-        # For each possible position in the output sequence...
-        for iter in range(max_length):
-            # Convert the output sequence list to a tensor
-            tgt_tensor = torch.LongTensor(output_seq).unsqueeze(0).to(device)
-            
-            print(f"\r{iter+1}/{self.config.block_size}", end="")
-            
-            # Create a target mask
-            tgt_mask = self.config.tokenizer.generate_padding_mask(tgt_tensor, True, device)
-
-            # Decode the encoded source sequence
-            output, dec_attention, cross_attention = self.decoder(tgt_tensor, enc_output, src_mask, tgt_mask)
-
-            # Take the last token of the output sequence
-            output_token = output.argmax(2)[:, -1].item()
-            
-            # Append the output token to the output sequence
-            output_seq.append(output_token)
-
-            # Break the loop if the output token is the end-of-sequence token
-            if output_token == self.config.tokenizer.EOS_IDX:
-                break
-        # Convert the generated target sequence to a string
-        return tgt_tensor, dict(encoder_attn=encoder_attn, decoder_attn=dec_attention, cross_attn=cross_attention)
         
-    @torch.no_grad()
-    def generate(self, src, p=0.9, src_mask=None):
-        """
-        Generate a sequence of words using Top-p sampling.
-    
-        Args:
-            - src (torch.Tensor): The source sequences to translate.
-            - p (float): The cumulative probability threshold for Top-p sampling.
-            - src_mask (torch.Tensor): The input_mask tensor to the encoder, size (B, 1, 1, T).
-    
-        Returns:
-            - Tuple[torch.Tensor, Dict[str, torch.Tensor]]: The best sequence found by beam search and a dictionary containing the attention weights.
-        """
-        enc_output, encoder_attn = self.encoder(src, src_mask)
-        # initialize beam with start token
-        idx = torch.full((src.size(0), 1), self.config.tokenizer.BOS_IDX).long().to(src.device)
-
-        for iter in range(self.config.block_size):
-            print(f"\r{iter+1}/{self.config.block_size} idx={idx}", end="")
-            outputs, dec_attention, cross_attention = self.decoder(idx, enc_output)
-
-            # Get the next token probabilities
-            next_token_logits = outputs[:, -1, :]
-    
-            # Sample a token with Top-p sampling
-            next_token = self.__top_p_sampling(next_token_logits, p=p)
-    
-            # Append the sampled token to the idx
-            idx = torch.cat([idx, next_token], dim=-1)
-
+        # idx is (B, T) array of indices in the current context
+        for _ in range(max_new_tokens):
+            # crop idx to the last block_size tokens
+            idx_cond = idx if idx.size(1) <= self.config.block_size else idx[:, -self.config.block_size:]
+            # get the predictions
+            logits, dec_attention, cross_attention = self.decoder(idx_cond, enc_output, src_mask)
+            # focus only on the last time step
+            logits = logits[:, -1, :] / temperature # becomes (B, C)
+            # optionally crop the logits to only the top k options
+            if top_k is not None:
+                v, _ = torch.topk(logits, min(top_k, logits.size(-1)))
+                logits[logits < v[:, [-1]]] = -float('Inf')
+            # apply softmax to get probabilities
+            probs = F.softmax(logits, dim=-1) # (B, C)
+            # sample from the distribution
+            idx_next = torch.multinomial(probs, num_samples=1) # (B, 1)
+            # append sampled index to the running sequence
+            idx = torch.cat((idx, idx_next), dim=1) # (B, T+1)
         return idx, dict(encoder_attn=encoder_attn, decoder_attn=dec_attention, cross_attn=cross_attention)
+        
+    def configure_optimizers(self, weight_decay, learning_rate, betas, device_type, eps):
+        # start with all of the candidate parameters
+        param_dict = {pn: p for pn, p in self.named_parameters()}
+        # filter out those that do not require grad
+        param_dict = {pn: p for pn, p in param_dict.items() if p.requires_grad}
+        # create optim groups. Any parameters that is 2D will be weight decayed, otherwise no.
+        # i.e. all weight tensors in matmuls + embeddings decay, all biases and layernorms don't.
+        decay_params = [p for n, p in param_dict.items() if p.dim() >= 2]
+        nodecay_params = [p for n, p in param_dict.items() if p.dim() < 2]
+        optim_groups = [
+            {'params': decay_params, 'weight_decay': weight_decay},
+            {'params': nodecay_params, 'weight_decay': 0.0}
+        ]
+        num_decay_params = sum(p.numel() for p in decay_params)
+        num_nodecay_params = sum(p.numel() for p in nodecay_params)
+        print(f"num decayed parameter tensors: {len(decay_params)}, with {num_decay_params:,} parameters")
+        print(f"num non-decayed parameter tensors: {len(nodecay_params)}, with {num_nodecay_params:,} parameters")
+        optimizer = torch.optim.AdamW(optim_groups, lr=learning_rate, betas=betas, eps=eps)
+
+        return optimizer
 
     def save_model(self, path: str):
         """

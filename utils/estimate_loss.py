@@ -2,7 +2,7 @@ import torch
 from tqdm.notebook import tqdm
 
 @torch.no_grad()
-def estimate_loss(model, dataset, config, splits = ['train', 'val']):
+def estimate_loss(model, ctx, dataset, config, splits = ['train', 'val']):
     """
     This function estimates the loss of a model on specified data splits without performing backpropagation.
     It sets the model to evaluation mode, iterates over the data splits and calculates the average loss.
@@ -43,7 +43,8 @@ def estimate_loss(model, dataset, config, splits = ['train', 'val']):
             Y_mask = n_batch['targets_mask']
             
             # Evaluate the loss for the current batch
-            logits, loss = model(X, Y, X_mask, Y_mask)
+            with ctx:
+                logits, loss = model(X, Y, X_mask, Y_mask)
 
             # Store the current loss
             losses[k] = loss.item()

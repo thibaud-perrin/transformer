@@ -42,8 +42,10 @@ class EncoderBlock(nn.Module):
         """
         # MultiHeadAttention
         x = self.ln_1(x)
-        x_attn, decoder_attn = checkpoint(self.attn, x, x, x, False, mask)
-        x = x + x_attn
+        x_attn, decoder_attn = checkpoint(self.attn, x, x, x, mask, False)
+        
         # FeedForward
-        x = x + checkpoint(self.ffw, self.ln_2(x))
+        x = self.ln_2(x + x_attn)
+        x = x + checkpoint(self.ffw, x)
+        
         return x, decoder_attn
